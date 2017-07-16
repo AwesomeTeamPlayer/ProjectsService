@@ -11,7 +11,21 @@
 ```
 If user was successfully added to project returns `{"status":"ok"}`.
 
+It creates event:
+```json
+{
+  "name": "AddedUserToProject",
+  "occuredAt": "2017-07-16T11:02:05+02:00",
+  "data": {
+    "userId": 123,
+    "projectId": 456
+  }
+}
+```
+
+
 If user had access to a specified project before, it returns `{"status":"ok"}`.
+
 
 **DELETE /users** 
 ```json
@@ -21,6 +35,19 @@ If user had access to a specified project before, it returns `{"status":"ok"}`.
 }
 ```
 If user was successfully removed from project returns `{"status":"ok"}`.
+
+
+It creates event:
+```json
+{
+  "name": "RemovedUserFromProject",
+  "occuredAt": "2017-07-16T11:02:05+02:00",
+  "data": {
+    "userId": 123,
+    "projectId": 456
+  }
+}
+```
 
 If user had not access to a specified project before, it returns `{"status":"ok"}`.
 
