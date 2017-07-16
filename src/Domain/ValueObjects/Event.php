@@ -46,4 +46,27 @@ class Event
 		);
 	}
 
+	/**
+	 * @return string
+	 */
+	public function name(): string
+	{
+		return $this->name;
+	}
+
+	/**
+	 * @return \DateTime
+	 */
+	public function occuredAt(): \DateTime
+	{
+		return $this->occuredAt;
+	}
+
+	/**
+	 * @return array
+	 */
+	public function data(): array
+	{
+		return $this->data;
+	}
 }
