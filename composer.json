@@ -1,7 +1,8 @@
 {
   "require": {
     "slim/slim": "3.8.1",
-    "guzzlehttp/guzzle": "6.3.0"
+    "guzzlehttp/guzzle": "6.3.0",
+    "simonisme/validator": "1.0.0"
   },
   "require-dev": {
     "phpunit/phpunit": "6.0"
