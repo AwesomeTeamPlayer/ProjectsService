@@ -3,11 +3,11 @@
 namespace Application;
 
 use Adapters\EventsRepositoryInterface;
-use Adapters\Exceptions\DuplicateProjectUserPairException;
+use Adapters\Exceptions\ProjectUserPairDoesNotExistException;
 use Adapters\ProjectsUsersRepositoryInterface;
 use Domain\ValueObjects\Event;
 
-class AddUserService
+class RemoveUserService
 {
 	/**
 	 * @var ProjectsUsersRepositoryInterface
@@ -38,12 +38,12 @@ class AddUserService
 	 *
 	 * @return void
 	 */
-	public function addUser(int $userId, int $projectId)
+	public function removeUser(int $userId, int $projectId)
 	{
-		if ($this->tryAddUser($userId, $projectId)) {
+		if ($this->tryRemoveUser($userId, $projectId)) {
 			$this->eventsRepository->push(
 				new Event(
-					'AddedUserToProject',
+					'RemoveUserFromProject',
 					new \DateTime(),
 					[
 						'userId' => $userId,
@@ -60,11 +60,11 @@ class AddUserService
 	 *
 	 * @return bool
 	 */
-	private function tryAddUser(int $userId, int $projectId) : bool
+	private function tryRemoveUser(int $userId, int $projectId) : bool
 	{
 		try {
-			$this->projectsUsersRepository->addUser($userId, $projectId);
-		} catch (DuplicateProjectUserPairException $exception) {
+			$this->projectsUsersRepository->removeUser($userId, $projectId);
+		} catch (ProjectUserPairDoesNotExistException $exception) {
 			return false;
 		}
 		return true;
