@@ -49,7 +49,7 @@ It creates event:
 }
 ```
 
-If user had not access to a specified project before, it returns `{"status":"not removed"}`.
+If user had not access to a specified project before, it returns `{"status":"ok"}`.
 
 **GET /users/?project_id={PROJECT_ID}**
 
