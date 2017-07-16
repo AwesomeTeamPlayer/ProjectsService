@@ -36,9 +36,9 @@ class RemoveUserService
 	 * @param int $userId
 	 * @param int $projectId
 	 *
-	 * @return void
+	 * @return bool
 	 */
-	public function removeUser(int $userId, int $projectId)
+	public function removeUser(int $userId, int $projectId) : bool
 	{
 		if ($this->tryRemoveUser($userId, $projectId)) {
 			$this->eventsRepository->push(

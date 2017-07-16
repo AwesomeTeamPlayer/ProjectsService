@@ -9,7 +9,7 @@
     "projectId": "abc123"
 }
 ```
-If user was successfully added to project returns `{"status":"ok"}`.
+If user was successfully added to project returns `{"status":"created"}`.
 
 It creates event:
 ```json
@@ -24,7 +24,7 @@ It creates event:
 ```
 
 
-If user had access to a specified project before, it returns `{"status":"ok"}`.
+If user had access to a specified project before, it returns `{"status":"not created"}`.
 
 
 **DELETE /users** 
@@ -34,7 +34,7 @@ If user had access to a specified project before, it returns `{"status":"ok"}`.
     "projectId": "abc123"
 }
 ```
-If user was successfully removed from project returns `{"status":"ok"}`.
+If user was successfully removed from project returns `{"status":"removed"}`.
 
 
 It creates event:
@@ -49,7 +49,7 @@ It creates event:
 }
 ```
 
-If user had not access to a specified project before, it returns `{"status":"ok"}`.
+If user had not access to a specified project before, it returns `{"status":"not removed"}`.
 
 **GET /users/?project_id={PROJECT_ID}**
 
