@@ -36,9 +36,9 @@ class AddUserService
 	 * @param int $userId
 	 * @param int $projectId
 	 *
-	 * @return void
+	 * @return bool
 	 */
-	public function addUser(int $userId, int $projectId)
+	public function addUser(int $userId, int $projectId) : bool
 	{
 		if ($this->tryAddUser($userId, $projectId)) {
 			$this->eventsRepository->push(
@@ -51,7 +51,11 @@ class AddUserService
 					]
 				)
 			);
+
+			return true;
 		}
+
+		return false;
 	}
 
 	/**
