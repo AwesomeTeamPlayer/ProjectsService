@@ -3,13 +3,14 @@
 namespace Application;
 
 use Adapters\EventsRepositoryInterface;
+use Adapters\Exceptions\ProjectUserPairDoesNotExistException;
 use Adapters\ProjectsUsersRepositoryInterface;
 use Domain\ValueObjects\Event;
 use PHPUnit\Framework\TestCase;
 
 class RemoveUserServiceTest extends TestCase
 {
-	public function test_removeUser()
+	public function test_removeUser_when_user_is_removed()
 	{
 		$userId = 123;
 		$projectId = 456;
@@ -43,6 +44,29 @@ class RemoveUserServiceTest extends TestCase
 			$projectUserRepository,
 			$eventRepository
 		);
-		$removeUserService->removeUser($userId, $projectId);
+		$result = $removeUserService->removeUser($userId, $projectId);
+		$this->assertTrue($result);
+	}
+
+	public function test_removeUser_when_user_is_not_removed()
+	{
+		$userId = 123;
+		$projectId = 456;
+
+		$projectUserRepository = $this->getMockBuilder(ProjectsUsersRepositoryInterface::class)
+			->setMethods(['addUser', 'removeUser', 'getUsersByProjectId', 'getProjectsByUserId', 'checkUserAccess'])
+			->getMock();
+		$projectUserRepository->method('removeUser')->willThrowException(new ProjectUserPairDoesNotExistException());
+
+		$eventRepository = $this->getMockBuilder(EventsRepositoryInterface::class)
+			->setMethods(['push'])
+			->getMock();
+
+		$removeUserService = new RemoveUserService(
+			$projectUserRepository,
+			$eventRepository
+		);
+		$result = $removeUserService->removeUser($userId, $projectId);
+		$this->assertFalse($result);
 	}
 }

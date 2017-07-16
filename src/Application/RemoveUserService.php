@@ -51,7 +51,11 @@ class RemoveUserService
 					]
 				)
 			);
+
+			return true;
 		}
+
+		return false;
 	}
 
 	/**
