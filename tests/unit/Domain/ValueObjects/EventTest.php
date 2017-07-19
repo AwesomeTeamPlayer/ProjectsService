@@ -12,6 +12,7 @@ class EventTest extends TestCase
 	public function test_toJson($name, $occuredAt, $data, $expectedJson)
 	{
 		$event = new Event($name, $occuredAt, $data);
+		$this->assertFalse(true);
 		$this->assertEquals($expectedJson, $event->toJson());
 	}
 
