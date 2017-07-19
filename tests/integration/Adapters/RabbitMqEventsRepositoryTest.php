@@ -34,7 +34,7 @@ class RabbitMqEventsRepositoryTest extends TestCase
 		$this->connection->close();
 	}
 
-	public function test_toJson()
+	public function test_push()
 	{
 		$date = new \DateTime();
 		$date->setTimestamp(1500479226);
