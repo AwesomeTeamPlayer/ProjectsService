@@ -14,11 +14,23 @@ class RabbitMqEventsRepository implements EventsRepositoryInterface
 	private $channel;
 
 	/**
-	 * @param AMQPChannel $AMQPChannel
+	 * @var string
 	 */
-	public function __construct(AMQPChannel $channel)
+	private $queueName;
+
+	/**
+	 * @param AMQPChannel $channel
+	 * @param string $queueName
+	 */
+	public function __construct(AMQPChannel $channel, string $queueName)
 	{
 		$this->channel = $channel;
+		$this->queueName = $queueName;
+	}
+
+	public function __destruct()
+	{
+		$this->channel->close();
 	}
 
 	/**
@@ -29,6 +41,6 @@ class RabbitMqEventsRepository implements EventsRepositoryInterface
 	public function push(Event $event)
 	{
 		$message = new AMQPMessage($event->toJson());
-		$this->channel->basic_publish($message);
+		$this->channel->basic_publish($message, '', $this->queueName);
 	}
 }

@@ -40,7 +40,7 @@ class Event
 		return json_encode(
 			[
 				'name' => $this->name,
-				'occuredAt' => $this->occuredAt->format('Y-m-d') . 'T' . $this->occuredAt->format('H:i:sP'),
+				'occuredAt' => $this->occuredAt->format('Y-m-d\TH:i:sP'),
 				'data' => $this->data,
 			]
 		);
