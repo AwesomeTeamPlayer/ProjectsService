@@ -4,3 +4,4 @@ php: '7.1'
 before_install:
   - composer install
   - ./runTests.sh
+  - ./runTests-Integration.sh
