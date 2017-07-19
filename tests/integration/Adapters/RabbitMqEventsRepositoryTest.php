@@ -19,6 +19,9 @@ class RabbitMqEventsRepositoryTest extends TestCase
 	 */
 	private $channel;
 
+	/**
+	 * @var string
+	 */
 	const QUEUE_NAME = 'events';
 
 	public function setUp()

@@ -14,7 +14,7 @@ done
 # how to check is working
 #docker exec rabbitmq-for-tests service --status-all | grep 'rabbitmq-server' | grep '+' | wc -l
 
-./vendor/bin/phpunit ./tests/integration/Adapters/MysqlProjectsUsersRepositoryTest.php
+./vendor/bin/phpunit ./tests/integration
 
 docker stop mysql-for-tests
 docker stop rabbitmq-for-tests

@@ -7,4 +7,5 @@ services:
 before_install:
   - composer install
   - ./runTests.sh
-  - ./runTests-Integration.sh
+  - ./runTests-integration.sh
+  - ./runTests-end-to-end.sh
