@@ -1,0 +1,107 @@
+<?php
+
+namespace Api;
+
+class ApplicationConfig
+{
+	/**
+	 * @var array
+	 */
+	private $config = [];
+
+	/**
+	 * @param array $config
+	 */
+	public function __construct(array $config)
+	{
+		$this->config = $config;
+	}
+
+	/**
+	 * @return array
+	 */
+	public function getArray(): array
+	{
+		return $this->config;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getRedisHost() : string
+	{
+		return $this->config['redis']['host'];
+	}
+
+	/**
+	 * @return int
+	 */
+	public function getRedisPort() : int
+	{
+		return (int) $this->config['redis']['port'];
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getRedisUser() : string
+	{
+		return $this->config['redis']['user'];
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getRedisPassword() : string
+	{
+		return $this->config['redis']['password'];
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getRedisQueueName() : string
+	{
+		return $this->config['redis']['queue_name'];
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getMysqlHost() : string
+	{
+		return $this->config['mysql']['host'];
+	}
+
+	/**
+	 * @return int
+	 */
+	public function getMysqlPort() : int
+	{
+		return (int) $this->config['mysql']['port'];
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getMysqlUser() : string
+	{
+		return $this->config['mysql']['user'];
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getMysqlPassword() : string
+	{
+		return $this->config['mysql']['password'];
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getMysqlDatabase() : string
+	{
+		return $this->config['mysql']['database'];
+	}
+}
