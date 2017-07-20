@@ -7,7 +7,17 @@ services:
 install:
   - composer install
 
+before_script:
+  - docker run -d --name mysql-for-tests -p="3306:3306" -e MYSQL_ROOT_PASSWORD=root -eMYSQL_DATABASE=testdb mysql:8.0.1
+  - docker run -d --name rabbitmq-for-tests -p="5672:5672" rabbitmq:3.6.10
+
 script:
   - ./runTests.sh
   - ./runTests-integration.sh
   - ./runTests-end-to-end.sh
+
+after_script:
+  - docker stop mysql-for-tests
+  - docker stop rabbitmq-for-tests
+  - docker rm mysql-for-tests
+  - docker rm rabbitmq-for-tests
