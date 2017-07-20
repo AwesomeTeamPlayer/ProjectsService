@@ -5,6 +5,12 @@ use Api\ApplicationConfig;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 use PHPUnit\Framework\TestCase;
 use Slim\App;
+use Slim\Http\Environment;
+use Slim\Http\Headers;
+use Slim\Http\Request;
+use Slim\Http\RequestBody;
+use Slim\Http\Response;
+use Slim\Http\Uri;
 
 abstract class AbstractEndToEndTest extends TestCase
 {
@@ -46,17 +52,17 @@ abstract class AbstractEndToEndTest extends TestCase
 		$applicationBuilder = new ApplicationBuilder();
 		$applicationConfig = new ApplicationConfig(
 			[
-				'redis' => [
+				'rabbitmq' => [
 					'host' => '127.0.0.1',
 					'port' => 5672,
-					'login' => 'guest',
+					'user' => 'guest',
 					'password' => 'guest',
 					'channel' => 'events',
 				],
 				'mysql' => [
 					'host' => '127.0.0.1',
 					'port' => 3306,
-					'login' => 'root',
+					'user' => 'root',
 					'password' => 'root',
 					'database' => 'testdb',
 				],
@@ -72,5 +78,30 @@ abstract class AbstractEndToEndTest extends TestCase
 
 		$this->channel->close();
 		$this->connection->close();
+	}
+
+	protected function makeRequest($method, $path, $bodyContent = '')
+	{
+		$options = array(
+			'REQUEST_METHOD' => $method,
+			'REQUEST_URI'    => $path
+		);
+
+		$env = Environment::mock(array_merge($options, []));
+		$uri = Uri::createFromEnvironment($env);
+		$headers = Headers::createFromEnvironment($env);
+		$cookies = [];
+		$serverParams = $env->all();
+		$body = new RequestBody();
+
+		if ($bodyContent !== '') {
+			$body->write($bodyContent);
+		}
+
+		$request  = new Request($method, $uri, $headers, $cookies, $serverParams, $body);
+		$response = new Response();
+
+		$response = $this->app->process($request, $response);
+		return (string) $response->getBody();
 	}
 }

@@ -28,41 +28,41 @@ class ApplicationConfig
 	/**
 	 * @return string
 	 */
-	public function getRedisHost() : string
+	public function getRabbitmqHost() : string
 	{
-		return $this->config['redis']['host'];
+		return $this->config['rabbitmq']['host'];
 	}
 
 	/**
 	 * @return int
 	 */
-	public function getRedisPort() : int
+	public function getRabbitmqPort() : int
 	{
-		return (int) $this->config['redis']['port'];
+		return (int) $this->config['rabbitmq']['port'];
 	}
 
 	/**
 	 * @return string
 	 */
-	public function getRedisUser() : string
+	public function getRabbitmqUser() : string
 	{
-		return $this->config['redis']['user'];
+		return $this->config['rabbitmq']['user'];
 	}
 
 	/**
 	 * @return string
 	 */
-	public function getRedisPassword() : string
+	public function getRabbitmqPassword() : string
 	{
-		return $this->config['redis']['password'];
+		return $this->config['rabbitmq']['password'];
 	}
 
 	/**
 	 * @return string
 	 */
-	public function getRedisQueueName() : string
+	public function getRabbitmqChannel() : string
 	{
-		return $this->config['redis']['queue_name'];
+		return $this->config['rabbitmq']['channel'];
 	}
 
 	/**
