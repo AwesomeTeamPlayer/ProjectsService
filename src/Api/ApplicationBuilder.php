@@ -63,12 +63,20 @@ class ApplicationBuilder
 			$projectsUsersRepository
 		);
 
+		$getUsersByProjectEndpoint = new GetUsersByProjectEndpoint(
+			$projectsUsersRepository
+		);
+
 		$app->get('/users/hasAccess', function (Request $request, Response $response, $args) use ($hasUserAccessToProjectEndpoint) {
 			return $hasUserAccessToProjectEndpoint->run($request, $response);
 		});
 
 		$app->put('/users', function (Request $request, Response $response, $args) use ($addUserEndpoint) {
 			return $addUserEndpoint->run($request, $response);
+		});
+
+		$app->get('/users', function (Request $request, Response $response, $args) use ($getUsersByProjectEndpoint) {
+			return $getUsersByProjectEndpoint->run($request, $response);
 		});
 
 		$app->get('/projects', function (Request $request, Response $response, $args) use ($getProjectsByUserEndpoint) {

@@ -75,7 +75,7 @@ class MysqlProjectsUsersRepository implements ProjectsUsersRepositoryInterface
 		$usersIds = [];
 		$results = $this->dbConnection->query($sqlQuery);
 		foreach ($results as $result){
-			$usersIds[] = (int) result['user_id'];
+			$usersIds[] = (int) $result['user_id'];
 		}
 
 		return $usersIds;
