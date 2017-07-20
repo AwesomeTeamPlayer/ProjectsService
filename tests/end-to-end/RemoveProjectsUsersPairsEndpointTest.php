@@ -85,10 +85,14 @@ class RemoveProjectsUsersPairsEndpointTest extends AbstractEndToEndTest
 			'{"status":"not removed"}',
 			$this->makeRequest('DELETE', '/users', json_encode([ 'projectId' => 999, 'userId' => 123]))
 		);
+
+		$message = $this->channel->basic_get(AbstractEndToEndTest::QUEUE_NAME, true);
+		$this->assertNull($message);
 	}
 
 	public function test_successful_remove_pair()
 	{
+
 		$this->assertEquals(
 			'{"status":"created"}',
 			$this->makeRequest('PUT', '/users', json_encode([ 'projectId' => 999, 'userId' => 123]))
@@ -103,5 +107,33 @@ class RemoveProjectsUsersPairsEndpointTest extends AbstractEndToEndTest
 			'{"status":"removed"}',
 			$this->makeRequest('DELETE', '/users', json_encode([ 'projectId' => 999, 'userId' => 123]))
 		);
+
+		$this->assertEquals(
+			'{"status":"not removed"}',
+			$this->makeRequest('DELETE', '/users', json_encode([ 'projectId' => 999, 'userId' => 123]))
+		);
+
+		sleep(1);
+
+		$message = $this->channel->basic_get(AbstractEndToEndTest::QUEUE_NAME, true);
+		$this->assertEquals([
+			'name' => 'AddedUserToProject',
+			'data' => [
+				'userId' => 123,
+				'projectId' => 999
+			],
+		], array_diff_key(json_decode($message->getBody(), true), ['occuredAt' => '']));
+
+		$message = $this->channel->basic_get(AbstractEndToEndTest::QUEUE_NAME, true);
+		$this->assertEquals([
+			'name' => 'RemovedUserFromProject',
+			'data' => [
+				'userId' => 123,
+				'projectId' => 999
+			],
+		], array_diff_key(json_decode($message->getBody(), true), ['occuredAt' => '']));
+
+		$message = $this->channel->basic_get(AbstractEndToEndTest::QUEUE_NAME, true);
+		$this->assertNull($message);
 	}
 }

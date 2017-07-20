@@ -28,11 +28,6 @@ class RabbitMqEventsRepository implements EventsRepositoryInterface
 		$this->queueName = $queueName;
 	}
 
-	public function __destruct()
-	{
-		$this->channel->close();
-	}
-
 	/**
 	 * @param Event $event
 	 *

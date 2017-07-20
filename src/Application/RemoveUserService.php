@@ -43,7 +43,7 @@ class RemoveUserService
 		if ($this->tryRemoveUser($userId, $projectId)) {
 			$this->eventsRepository->push(
 				new Event(
-					'RemoveUserFromProject',
+					'RemovedUserFromProject',
 					new \DateTime(),
 					[
 						'userId' => $userId,

@@ -32,7 +32,7 @@ class RemoveUserServiceTest extends TestCase
 		$eventRepository->method('push')->willReturnCallback(
 			function(Event $event) use ($userId, $projectId)
 			{
-				$this->assertEquals('RemoveUserFromProject', $event->name());
+				$this->assertEquals('RemovedUserFromProject', $event->name());
 				$this->assertEquals([
 					'userId' => $userId,
 					'projectId' => $projectId,

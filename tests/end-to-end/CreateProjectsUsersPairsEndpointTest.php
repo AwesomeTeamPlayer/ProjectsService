@@ -85,6 +85,25 @@ class CreateProjectsUsersPairsEndpointTest extends AbstractEndToEndTest
 			'{"hasAccess":true}',
 			$this->makeRequest('GET', ' /users/hasAccess?user_id=123&project_id=999')
 		);
+
+		$this->assertEquals(
+			'{"status":"not created"}',
+			$this->makeRequest('PUT', '/users', json_encode([ 'projectId' => 999, 'userId' => 123]))
+		);
+
+		sleep(1);
+
+		$message = $this->channel->basic_get(AbstractEndToEndTest::QUEUE_NAME, true);
+		$this->assertEquals([
+			'name' => 'AddedUserToProject',
+		    'data' => [
+		    	'userId' => 123,
+			    'projectId' => 999
+		    ],
+		], array_diff_key(json_decode($message->getBody(), true), ['occuredAt' => '']));
+
+		$message = $this->channel->basic_get(AbstractEndToEndTest::QUEUE_NAME, true);
+		$this->assertNull($message);
 	}
 
 	public function test_create_pair_and_check_different_project()

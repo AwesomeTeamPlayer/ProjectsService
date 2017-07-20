@@ -76,8 +76,17 @@ abstract class AbstractEndToEndTest extends TestCase
 		$this->mysqli->query('DROP TABLE projects_users;');
 		$this->mysqli->close();
 
+		sleep(1);
+		$this->clearQueue();
 		$this->channel->close();
 		$this->connection->close();
+	}
+
+	private function clearQueue()
+	{
+		do {
+			$message = $this->channel->basic_get(self::QUEUE_NAME, true);
+		} while ($message !== null);
 	}
 
 	protected function makeRequest($method, $path, $bodyContent = '')
@@ -101,7 +110,9 @@ abstract class AbstractEndToEndTest extends TestCase
 		$request  = new Request($method, $uri, $headers, $cookies, $serverParams, $body);
 		$response = new Response();
 
+		ob_start();
 		$response = $this->app->process($request, $response);
+		ob_end_flush();
 		return (string) $response->getBody();
 	}
 }
