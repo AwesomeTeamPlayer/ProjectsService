@@ -8,7 +8,9 @@ use Adapters\ProjectsUsersRepositoryInterface;
 use Adapters\RabbitMqEventsRepository;
 use Api\RequestValidators\AddUserRequestValidator;
 use Api\RequestValidators\HasUserAccessToProjectRequestValidator;
+use Api\RequestValidators\RemoveUserRequestValidator;
 use Application\AddUserService;
+use Application\RemoveUserService;
 use mysqli;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 use Slim\App;
@@ -44,6 +46,14 @@ class ApplicationBuilder
 			new AddUserRequestValidator()
 		);
 
+		$removeUserEndpoint = new RemoveUserEndpoint(
+			new RemoveUserService(
+				$projectsUsersRepository,
+				$eventsRepository
+			),
+			new RemoveUserRequestValidator()
+		);
+
 		$hasUserAccessToProjectEndpoint = new HasUserAccessToProjectEndpoint(
 			new HasUserAccessToProjectRequestValidator(),
 			$projectsUsersRepository
@@ -55,6 +65,10 @@ class ApplicationBuilder
 
 		$app->put('/users', function (Request $request, Response $response, $args) use ($addUserEndpoint) {
 			return $addUserEndpoint->run($request, $response);
+		});
+
+		$app->delete('/users', function (Request $request, Response $response, $args) use ($removeUserEndpoint) {
+			return $removeUserEndpoint->run($request, $response);
 		});
 
 		$app->get('/', function (Request $request, Response $response, $args) use ($applicationConfig) {

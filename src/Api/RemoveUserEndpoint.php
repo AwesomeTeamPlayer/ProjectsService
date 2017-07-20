@@ -51,9 +51,9 @@ class RemoveUserEndpoint
 
 		$removed = $this->removeUserService->removeUser($userId, $projectId);
 		if ($removed) {
-			return $response->withJson(['status' => 'created']);
+			return $response->withJson(['status' => 'removed']);
 		}
 
-		return $response->withJson(['status' => 'not created']);
+		return $response->withJson(['status' => 'not removed']);
 	}
 }
