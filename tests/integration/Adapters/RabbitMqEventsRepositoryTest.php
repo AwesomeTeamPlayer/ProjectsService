@@ -26,7 +26,7 @@ class RabbitMqEventsRepositoryTest extends TestCase
 
 	public function setUp()
 	{
-		$this->connection = new AMQPStreamConnection('127.0.0.1', 5672, 'guest', 'guest');
+		$this->connection = new AMQPStreamConnection('127.0.0.1', 15672, 'guest', 'guest');
 		$this->channel = $this->connection->channel();
 		$this->channel->queue_declare(self::QUEUE_NAME, false, false, false, false);
 	}

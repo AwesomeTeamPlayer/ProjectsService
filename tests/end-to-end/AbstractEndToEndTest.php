@@ -41,11 +41,11 @@ abstract class AbstractEndToEndTest extends TestCase
 
 	public function setUp()
 	{
-		$this->mysqli = new mysqli('127.0.0.1', 'root', 'root', 'testdb', 3306);
+		$this->mysqli = new mysqli('127.0.0.1', 'root', 'root', 'testdb', 13306);
 		$this->mysqli->query('CREATE TABLE projects_users (project_id INT NOT NULL,user_id INT NOT NULL);');
 		$this->mysqli->query('CREATE UNIQUE INDEX projects_users_unique_index ON projects_users (project_id, user_id);');
 
-		$this->connection = new AMQPStreamConnection('127.0.0.1', 5672, 'guest', 'guest');
+		$this->connection = new AMQPStreamConnection('127.0.0.1', 15672, 'guest', 'guest');
 		$this->channel = $this->connection->channel();
 		$this->channel->queue_declare(self::QUEUE_NAME, false, false, false, false);
 
@@ -54,14 +54,14 @@ abstract class AbstractEndToEndTest extends TestCase
 			[
 				'rabbitmq' => [
 					'host' => '127.0.0.1',
-					'port' => 5672,
+					'port' => 15672,
 					'user' => 'guest',
 					'password' => 'guest',
 					'channel' => 'events',
 				],
 				'mysql' => [
 					'host' => '127.0.0.1',
-					'port' => 3306,
+					'port' => 13306,
 					'user' => 'root',
 					'password' => 'root',
 					'database' => 'testdb',

@@ -14,7 +14,7 @@ class MysqlProjectsUsersRepositoryTest extends TestCase
 
 	public function setUp()
 	{
-		$this->mysqli = new mysqli('127.0.0.1', 'root', 'root', 'testdb', 3306);
+		$this->mysqli = new mysqli('127.0.0.1', 'root', 'root', 'testdb', 13306);
 		$this->mysqli->query('CREATE TABLE projects_users (project_id INT NOT NULL,user_id INT NOT NULL);');
 		$this->mysqli->query('CREATE UNIQUE INDEX projects_users_unique_index ON projects_users (project_id, user_id);');
 	}
