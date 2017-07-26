@@ -7,19 +7,19 @@ require __DIR__ . '/../../../vendor/autoload.php';
 
 $applicationConfig = new \Api\ApplicationConfig(
 	[
-		'redis' => [
-			'host' => '127.0.0.1',
-			'port' => 5672,
-			'login' => 'guest',
-			'password' => 'guest',
-			'channel' => 'events',
+		'rabbitmq' => [
+			'host' => urlencode(getenv('RABBIT_HOST')),
+			'port' => (int) urlencode(getenv('RABBIT_PORT')),
+			'login' => urlencode(getenv('RABBIT_LOGIN')),
+			'password' => urlencode(getenv('RABBIT_PASSWORD')),
+			'channel' => urlencode(getenv('RABBIT_CHANNEL')),
 		],
 		'mysql' => [
-			'host' => '127.0.0.1',
-			'port' => 3306,
-			'login' => 'root',
-			'password' => 'root',
-			'database' => 'testdb',
+			'host' => urlencode(getenv('MYSQL_HOST')),
+			'port' => (int) urlencode(getenv('MYSQL_PORT')),
+			'login' => urlencode(getenv('MYSQL_LOGIN')),
+			'password' => urlencode(getenv('MYSQL_PASSWORD')),
+			'database' => urlencode(getenv('MYSQL_DATABASE')),
 		],
 	]
 );

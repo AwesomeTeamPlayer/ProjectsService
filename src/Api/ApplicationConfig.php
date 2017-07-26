@@ -46,7 +46,7 @@ class ApplicationConfig
 	 */
 	public function getRabbitmqUser() : string
 	{
-		return $this->config['rabbitmq']['user'];
+		return $this->config['rabbitmq']['login'];
 	}
 
 	/**
@@ -86,7 +86,7 @@ class ApplicationConfig
 	 */
 	public function getMysqlUser() : string
 	{
-		return $this->config['mysql']['user'];
+		return $this->config['mysql']['login'];
 	}
 
 	/**
