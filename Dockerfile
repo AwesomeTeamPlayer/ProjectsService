@@ -1,4 +1,4 @@
-FROM php:7.1-fmp
+FROM php:7.1-fpm
 
 ADD . /app
 WORKDIR /app
