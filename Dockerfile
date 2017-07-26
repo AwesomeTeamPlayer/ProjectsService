@@ -8,6 +8,6 @@ RUN apt-get update && \
 
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-RUN apt -y install php7.0-mbstring
-RUN apt -y install php7.1-mysqli
-RUN apt -y install php-bcmath
+RUN docker-php-ext-install mbstring
+RUN docker-php-ext-install mysqli
+RUN docker-php-ext-install bcmath
