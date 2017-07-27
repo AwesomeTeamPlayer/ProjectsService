@@ -1,10 +1,5 @@
 <?php
 
-$numberOfTries = 1;
-if (count($argv) > 1) {
-	$numberOfTries = (int) $argv[1];
-}
-
 echo "\n\nStart installation\n\n";
 
 $host = getenv('MYSQL_HOST');
@@ -13,16 +8,14 @@ $user = getenv('MYSQL_LOGIN');
 $password = getenv('MYSQL_PASSWORD');
 $database = getenv('MYSQL_DATABASE');
 
-echo " - Host: " + $host + "\n";
-echo " - Port: " + $port + "\n";
-echo " - User: " + $user + "\n";
-echo " - Password: " + $password + "\n";
-echo " - Database: " + $database + "\n";
+echo " - Host: " . $host . "\n";
+echo " - Port: " . $port . "\n";
+echo " - User: " . $user . "\n";
+echo " - Password: " . $password . "\n";
+echo " - Database: " . $database . "\n";
 
-for ($i = 1; $i <= $numberOfTries; $i++) {
-
+while(true) {
 	sleep(1);
-
 	echo "Try no " . $i . "\n\n";
 
 	$mysqli = new mysqli(
@@ -44,7 +37,7 @@ for ($i = 1; $i <= $numberOfTries; $i++) {
 		continue;
 	}
 
-	$dirPath = __DIR__ . '/migrations';
+	$dirPath = __DIR__ . '/migrations/';
 	foreach (scandir($dirPath) as $fileName) {
 		if ($fileName === '.' || $fileName === '..') {
 			continue;
