@@ -10,7 +10,7 @@ do
     echo ""
     echo "$i sec:"
 
-    if ./env-checker.php; then
+    if ./env-checker.php 127.0.0.1 13306 root root testdb; then
         break;
     fi
 
