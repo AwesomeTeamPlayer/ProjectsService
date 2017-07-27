@@ -1,5 +1,10 @@
 <?php
 
+$numberOfTries = 1;
+if (count($argv) > 1) {
+	$numberOfTries = (int) $argv[1];
+}
+
 echo "\n\nStart installation\n\n";
 
 $host = getenv('MYSQL_HOST');
@@ -14,33 +19,37 @@ echo " - User: " + $user + "\n";
 echo " - Password: " + $password + "\n";
 echo " - Database: " + $database + "\n";
 
-$mysqli = new mysqli(
-	$host,
-	$user,
-	$password,
-	$database,
-	$port
-);
+for ($i = 1; $i <= $numberOfTries; $i++) {
+	echo "Try no " . $i . "\n\n";
+
+	$mysqli = new mysqli(
+		$host,
+		$user,
+		$password,
+		$database,
+		$port
+	);
 
 
-if ($mysqli->connect_errno) {
-	echo "Can not connect to the database";
-	exit(1);
-}
-
-if ($mysqli->ping() === false) {
-	echo "Can not send a ping to the database";
-	exit(1);
-}
-
-$dirPath = __DIR__ . '/migrations';
-foreach (scandir($dirPath) as $fileName) {
-	if ($fileName === '.' || $fileName === '..') {
+	if ($mysqli->connect_errno) {
+		echo "Can not connect to the database";
 		continue;
 	}
 
-	$mysqli->multi_query(file_get_contents($dirPath . $fileName));
+	if ($mysqli->ping() === false) {
+		echo "Can not send a ping to the database";
+		continue;
+	}
+
+	$dirPath = __DIR__ . '/migrations';
+	foreach (scandir($dirPath) as $fileName) {
+		if ($fileName === '.' || $fileName === '..') {
+			continue;
+		}
+
+		$mysqli->multi_query(file_get_contents($dirPath . $fileName));
+	}
+
+	echo "\n\nInstallation finished successfully\n\n";
+	break;
 }
-
-echo "\n\nInstallation finished successfully\n\n";
-
