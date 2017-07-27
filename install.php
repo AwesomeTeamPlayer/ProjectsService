@@ -20,6 +20,9 @@ echo " - Password: " + $password + "\n";
 echo " - Database: " + $database + "\n";
 
 for ($i = 1; $i <= $numberOfTries; $i++) {
+
+	sleep(1);
+
 	echo "Try no " . $i . "\n\n";
 
 	$mysqli = new mysqli(
