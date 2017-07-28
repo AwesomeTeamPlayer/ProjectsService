@@ -27,7 +27,10 @@ class ApplicationBuilder
 	 */
 	public function build(ApplicationConfig $applicationConfig) : App
 	{
-		$projectsUsersRepository = $this->buildProjectsUsersRepository($applicationConfig);
+		$mysqli = $this->getMysqli($applicationConfig);
+		$amqp = $this->getAmqpStreamConnection($applicationConfig);
+
+		$projectsUsersRepository = new MysqlProjectsUsersRepository($mysqli);
 		$eventsRepository = $this->buildEventRepository($applicationConfig);
 
 		$app = new App(new Container(
@@ -87,11 +90,17 @@ class ApplicationBuilder
 			return $removeUserEndpoint->run($request, $response);
 		});
 
-		$app->get('/', function (Request $request, Response $response, $args) use ($applicationConfig) {
+		$app->get('/', function (Request $request, Response $response, $args) use ($applicationConfig, $mysqli, $amqp) {
 			return $response->withJson(
 				[
 					'type' => 'projects-service',
-					'config' => $applicationConfig->getArray()
+					'config' => $applicationConfig->getArray(),
+					'status' => [
+						'is_connected'=> [
+							'MySQL' => $mysqli->ping(),
+							'RabbitMQ' => $amqp->isConnected(),
+						],
+					],
 				]
 			);
 		});
@@ -102,18 +111,16 @@ class ApplicationBuilder
 	/**
 	 * @param ApplicationConfig $applicationConfig
 	 *
-	 * @return ProjectsUsersRepositoryInterface
+	 * @return mysqli
 	 */
-	private function buildProjectsUsersRepository(ApplicationConfig $applicationConfig): ProjectsUsersRepositoryInterface
+	private function getMysqli(ApplicationConfig $applicationConfig) : mysqli
 	{
-		return new MysqlProjectsUsersRepository(
-			new mysqli(
-				$applicationConfig->getMysqlHost(),
-				$applicationConfig->getMysqlUser(),
-				$applicationConfig->getMysqlPassword(),
-				$applicationConfig->getMysqlDatabase(),
-				$applicationConfig->getMysqlPort()
-			)
+		return new mysqli(
+			$applicationConfig->getMysqlHost(),
+			$applicationConfig->getMysqlUser(),
+			$applicationConfig->getMysqlPassword(),
+			$applicationConfig->getMysqlDatabase(),
+			$applicationConfig->getMysqlPort()
 		);
 	}
 
@@ -124,12 +131,7 @@ class ApplicationBuilder
 	 */
 	private function buildEventRepository(ApplicationConfig $applicationConfig) : EventsRepositoryInterface
 	{
-		$connection = new AMQPStreamConnection(
-			$applicationConfig->getRabbitmqHost(),
-			$applicationConfig->getRabbitmqPort(),
-			$applicationConfig->getRabbitmqUser(),
-			$applicationConfig->getRabbitmqPassword()
-		);
+		$connection = $this->getAmqpStreamConnection($applicationConfig);
 		$channel = $connection->channel();
 		$channel->queue_declare(
 			$applicationConfig->getRabbitmqChannel(),
@@ -142,6 +144,21 @@ class ApplicationBuilder
 		return new RabbitMqEventsRepository(
 			$channel,
 			$applicationConfig->getRabbitmqChannel()
+		);
+	}
+
+	/**
+	 * @param ApplicationConfig $applicationConfig
+	 *
+	 * @return AMQPStreamConnection
+	 */
+	private function getAmqpStreamConnection(ApplicationConfig $applicationConfig) : AMQPStreamConnection
+	{
+		return new AMQPStreamConnection(
+			$applicationConfig->getRabbitmqHost(),
+			$applicationConfig->getRabbitmqPort(),
+			$applicationConfig->getRabbitmqUser(),
+			$applicationConfig->getRabbitmqPassword()
 		);
 	}
 }
