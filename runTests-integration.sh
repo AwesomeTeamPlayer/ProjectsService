@@ -18,6 +18,9 @@ do
 
 done
 
+echo ""
+echo ""
+
 ./vendor/bin/phpunit ./tests/integration
 TEST_COMMAND_RESULT=$?
 

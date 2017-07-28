@@ -18,6 +18,9 @@ do
 
 done
 
+echo ""
+echo ""
+
 ./vendor/bin/phpunit ./tests/end-to-end
 TEST_COMMAND_RESULT=$?
 
