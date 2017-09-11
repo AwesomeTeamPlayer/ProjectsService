@@ -1,103 +1,243 @@
 # ProjectService microservice
 
-## Endpoints
+Basic definitions:
+* project ID is a string hash. It has 10 characters.
+* user ID is a string hash. It has 10 characters.
+* all "occurredAt" and "createdAt" fields contains date in ISO 8601 format.
 
-**PUT /users** 
+In examples below user's and project's IDs have less characters to keep those examples clear.
+
+## CreateProject
+Parameters:
+* name (string)
+* type (int)
+* userIds (array of string)
+
+Example: 
 ```json
 {
-    "userId": 123,
-    "projectId": "abc123"
+    "name":"New project name",
+    "type": 123,
+    "userIds": ["user_1", "user_2","user_3"]
 }
 ```
-If user was successfully added to project returns `{"status":"created"}`.
 
-It creates event:
+It returns string with project ID.
+
+It creates events:
 ```json
 {
-  "name": "AddedUserToProject",
-  "occuredAt": "2017-07-16T11:02:05+02:00",
+  "name": "project.created",
+  "occurredAt": "...",
   "data": {
-    "userId": 123,
-    "projectId": 456
+    "projectId": "projectId",
+    "name":"New project name",
+    "type": 123,
+    "createdAt": "2012-12-12T13:22:35+04:00"
+  }
+}
+```
+and for each user:
+```json
+{
+  "name": "project.user.added",
+  "occurredAt": "...",
+  "data": {
+    "projectId": "projectId",
+    "userId": "user_1"
+  }
+}
+```
+
+## Update project data
+Parameters:
+* projectId (string) 
+* name (string) [optional]
+* type (int) [optional]
+* usersIds (array or string) [optional] - only this users will have access 
+to that project. Other users will be removed
+```json
+{
+    "projectId": "projectId",
+    "name":"Updated project name",
+    "type": 456,
+    "userIds": ["user_5", "user_6","user_7"]
+}
+```
+
+It return *true*
+
+It create events:
+```json
+{
+  "name": "project.updated",
+  "occurredAt": "...",
+  "data": {
+    "projectId": "projectId",
+    "name":"Updated project name",
+    "type": 456
+  }
+}
+```
+
+It creates events per each user
+```json
+{
+  "name": "project.user.added",
+  "occurredAt": "...",
+  "data": {
+    "projectId": "projectId",
+    "userId": "user_5"
+  }
+}
+```
+or/and
+```json
+{
+  "name": "project.user.removed",
+  "occurredAt": "...",
+  "data": {
+    "projectId": "projectId",
+    "userId": "user_5"
   }
 }
 ```
 
 
-If user had access to a specified project before, it returns `{"status":"not created"}`.
+## Add users to a project
+Parameters:
+* projectId (string) 
+* userIds (array of strings)
 
-
-**DELETE /users** 
+Example: 
 ```json
 {
-    "userId": 123,
-    "projectId": "abc123"
+    "projectId": "projectId",
+    "userIds": ["user_1", "user_2","user_3"]
 }
 ```
-If user was successfully removed from project returns `{"status":"removed"}`.
 
+It returns *true*.
 
-It creates event:
+It creates events per each user
 ```json
 {
-  "name": "RemovedUserFromProject",
-  "occuredAt": "2017-07-16T11:02:05+02:00",
+  "name": "project.user.added",
+  "occurredAt": "...",
   "data": {
-    "userId": 123,
-    "projectId": 456
+    "projectId": "h1dhe2da7",
+    "userId": "user_1"
   }
 }
 ```
 
-If user had not access to a specified project before, it returns `{"status":"ok"}`.
 
-**GET /users/?project_id={PROJECT_ID}**
+## Remove users from a project
+Parameters:
+* projectId (string) 
+* userIds (array of strings)
 
-It returns list of users' ID's with access to this project, for example:
-```json
-[
-  123, 34, 657
-]
-```
-
-If project does not exist it returns empty list.
-
-
-**GET /users/hasAccess?user_id={USER_ID}&project_id={PROJECT_ID}**
-
-It returns information about user's access to specified project:
+Example: 
 ```json
 {
-  "hasAccess": true
-}
-```
-If user of project does not exist it returns:
-```json
-{
-  "hasAccess": false
+    "projectId": "h1dhe2da7",
+    "userIds": ["user_1", "user_2","user_3"]
 }
 ```
 
----
+It returns *true*.
 
-**GET /projects/?user_id={USER_ID}**
-
-It returns list of projects' ID's, for example:
+It creates events per each user
 ```json
-[
-  "abc123", "def456", "ghi789"
-]
+{
+  "name": "project.user.removed",
+  "occurredAt": "...",
+  "data": {
+    "projectId": "h1dhe2da7",
+    "userId": "user_1"
+  }
+}
 ```
 
-If project does not exist it returns empty list.
+## List all projects
+Parameters:
+* userId (string)
+* page (positive integer)
+* offset (positive integer)
+* filter (one of those values: "all", "archived", "unarchived")
+* orderBy (one of those values: "name", "createdAt", "type")
+* order (one of those values: "desc", "asc")
 
-## Variables:
-
-## How to run unit tests?
-```bash
-/app/runTests.sh
+Example: 
+```json
+{
+  "userId": "user_1",
+  "page": 1,
+  "offset": 20,
+  "filter": "unarchived",
+  "orderBy": "name",
+  "order": "desc"
+}
 ```
 
-## TODO:
-1. Write the code :p
+It returns
+```json
+{
+  "list": [
+     {
+       "projectId": "projectId_1",
+       "name": "New project name",
+       "type": 123,
+       "isArchived": false,
+       "createdAt": "...",
+       "userIds": [ "user_1", "user_2", "user_3"]
+     },
+     // ...
+  ],
+  "countTotal": 24  
+}
+```
+
+
+## Get information about specific project
+Parameters:
+* projectId (string)
+
+Example: 
+```json
+{
+  "projectId": "projectId_1"
+}
+```
+
+It returns if project exists
+```json
+{
+   "projectId": "projectId_1",
+   "name": "New project name",
+   "type": 123,
+   "isArchived": false,
+   "createdAt": "...",
+   "userIds": [ "user_1", "user_2", "user_3"]
+}
+```
+
+or *false* otherwise.
+
+
+
+## Archived specific project
+Parameters:
+* projectId (string)
+
+Example: 
+```json
+{
+  "projectId": "projectId_1"
+}
+```
+
+It returns *true* if project exists and can be archived (it exists 
+was not archived before) or *false* otherwise.
+
 
