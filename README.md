@@ -237,7 +237,42 @@ Example:
 }
 ```
 
-It returns *true* if project exists and can be archived (it exists 
-was not archived before) or *false* otherwise.
+It returns *true* if project exists and can be archived (it was not archived before) 
+or *false* otherwise.
+
+It creates event
+```json
+{
+  "name": "project.archived",
+  "occurredAt": "...",
+  "data": {
+    "projectId": "h1dhe2da7"
+  }
+}
+```
 
 
+## Unarchived specific project
+Parameters:
+* projectId (string)
+
+Example: 
+```json
+{
+  "projectId": "projectId_1"
+}
+```
+
+It returns *true* if project exists and can be unarchived (it was archived before)
+or *false* otherwise.
+
+It creates event
+```json
+{
+  "name": "project.unarchived",
+  "occurredAt": "...",
+  "data": {
+    "projectId": "h1dhe2da7"
+  }
+}
+```
