@@ -68,7 +68,7 @@ class UpdateProjectEndpoint extends AbstractEndpoint
 //			])
 		];
 		$arrayValidator = new ArrayValidator();
-		return $arrayValidator->validateArray($validators, $data);
+		return $arrayValidator->validateArray($validators, $data, false);
 	}
 
 	protected function run(array $data)

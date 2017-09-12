@@ -3,6 +3,7 @@
 use Adapters\MysqlProjectsRepository;
 use Adapters\MysqlProjectsUsersRepository;
 use Domain\EventSender;
+use Domain\ValueObjects\Project;
 use Endpoints\CreateProjectEndpoint;
 use Endpoints\InvalidDataException;
 use Endpoints\UpdateProjectEndpoint;
@@ -22,14 +23,14 @@ class UpdateProjectEndpointsTest extends AbstractEndToEndTest
 	/**
 	 * @var CreateProjectEndpoint
 	 */
-	private $createProjectEndpoint;
+	private $updateProjectEndpoint;
 
 	public function setUp()
 	{
 		parent::setUp();
 		$this->mysqlProjectsRepository = new MysqlProjectsRepository($this->mysqli);
 		$this->mysqlProjectsUsersRepository = new MysqlProjectsUsersRepository($this->mysqli);
-		$this->createProjectEndpoint = new UpdateProjectEndpoint(
+		$this->updateProjectEndpoint = new UpdateProjectEndpoint(
 			$this->mysqlProjectsUsersRepository,
 			$this->mysqlProjectsRepository,
 			new EventSender($this->channel)
@@ -42,7 +43,7 @@ class UpdateProjectEndpointsTest extends AbstractEndToEndTest
 	public function test_with_incorrect_data($data, $expectedException)
 	{
 		try {
-			$this->createProjectEndpoint->execute($data);
+			$this->updateProjectEndpoint->execute($data);
 		} catch (InvalidDataException $exception) {
 			$this->assertEquals($exception->getErrorTexts(), $expectedException);
 		}
@@ -95,7 +96,7 @@ class UpdateProjectEndpointsTest extends AbstractEndToEndTest
 	public function test_when_project_does_not_exists()
 	{
 		try {
-			$this->createProjectEndpoint->execute([
+			$this->updateProjectEndpoint->execute([
 				'projectId' => '1234567890',
 				'name' => 'Project Name',
 				'type' => 123,
@@ -110,23 +111,34 @@ class UpdateProjectEndpointsTest extends AbstractEndToEndTest
 		}
 	}
 
-//	public function test_correct_with_users()
-//	{
-//		$projectId = $this->createProjectEndpoint->execute([
-//			'name' => 'Project Name',
-//			'type' => 123,
-//			'userIds' => ['user_1', 'user_2']
-//		]);
-//
-//		$project = $this->mysqlProjectsRepository->getProject($projectId);
-//
-//		$this->assertEquals($projectId, $project->getId());
-//		$this->assertEquals('Project Name', $project->getName());
-//		$this->assertEquals(123, $project->getType());
-//
-//		$userIds = $this->mysqlProjectsUsersRepository->getUsersByProjectId($projectId);
-//		$this->assertEquals(['user_1', 'user_2'], $userIds);
-//
+	public function test_correct_with_users()
+	{
+		$this->mysqlProjectsRepository->insert(
+			new Project(
+				'1234567890',
+				'Name',
+				123,
+				false,
+				['user_1', 'user_2']
+			)
+		);
+
+		$projectId = $this->updateProjectEndpoint->execute([
+			'projectId' => '1234567890',
+			'name' => 'New name',
+			'type' => 456,
+			'userIds' => ['user_11', 'user_12']
+		]);
+
+		$project = $this->mysqlProjectsRepository->getProject($projectId);
+
+		$this->assertEquals($projectId, $project->getId());
+		$this->assertEquals('New name', $project->getName());
+		$this->assertEquals(456, $project->getType());
+
+		$userIds = $this->mysqlProjectsUsersRepository->getOrderedUsersByProjectId($projectId);
+		$this->assertEquals(['user_1', 'user_2'], $userIds);
+
 //		$message = $this->channel->basic_get(AbstractEndToEndTest::QUEUE_NAME, true);
 //		$this->assertEquals('project.created', $message->delivery_info['routing_key']);
 //		$this->assertEquals('project.created', json_decode($message->getBody(), true)['name']);
@@ -153,5 +165,5 @@ class UpdateProjectEndpointsTest extends AbstractEndToEndTest
 //		$this->assertEquals([
 //			'projectId', 'userId'
 //		], array_keys(json_decode($message->getBody(), true)['data'] ));
-//	}
+	}
 }

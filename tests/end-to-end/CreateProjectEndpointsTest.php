@@ -102,7 +102,7 @@ class CreateProjectEndpointsTest extends AbstractEndToEndTest
 		$this->assertEquals('Project Name', $project->getName());
 		$this->assertEquals(123, $project->getType());
 
-		$userIds = $this->mysqlProjectsUsersRepository->getUsersByProjectId($projectId);
+		$userIds = $this->mysqlProjectsUsersRepository->getOrderedUsersByProjectId($projectId);
 		$this->assertEquals([], $userIds);
 	}
 
@@ -120,7 +120,7 @@ class CreateProjectEndpointsTest extends AbstractEndToEndTest
 		$this->assertEquals('Project Name', $project->getName());
 		$this->assertEquals(123, $project->getType());
 
-		$userIds = $this->mysqlProjectsUsersRepository->getUsersByProjectId($projectId);
+		$userIds = $this->mysqlProjectsUsersRepository->getOrderedUsersByProjectId($projectId);
 		$this->assertEquals(['user_1', 'user_2'], $userIds);
 
 		$message = $this->channel->basic_get(AbstractEndToEndTest::QUEUE_NAME, true);
