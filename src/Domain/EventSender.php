@@ -54,10 +54,13 @@ class EventSender
 
 	public function sendUserFromProjectRemovedEvent(string $projectId, string $userId)
 	{
-		$event = $this->buildEvent('project.user.removed', [
+		$name = 'project.user.removed';
+		$event = $this->buildEvent($name, [
 			"projectId" => $projectId,
 			"userId" => $userId,
 		]);
+
+		$this->publishEvent($name, $event);
 	}
 
 	public function sendProjectArchivedEvent(string $projectId)
