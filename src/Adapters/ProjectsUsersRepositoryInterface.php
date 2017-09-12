@@ -18,21 +18,30 @@ interface ProjectsUsersRepositoryInterface
 	public function addUser(string $userId, string $projectId);
 
 	/**
-	 * @param int $userId
-	 * @param int $projectId
+	 * @param string $userId
+	 * @param string $projectId
 	 *
 	 * @return void
 	 *
 	 * @throws ProjectUserPairDoesNotExistException
 	 */
-	public function removeUser(int $userId, int $projectId);
+	public function removeUser(string $userId, string $projectId);
 
 	/**
 	 * @param string $projectId
 	 *
+	 * @return int
+	 */
+	public function countUsers(string $projectId): int;
+
+	/**
+	 * @param string $projectId
+	 * @param int $offset
+	 * @param int $limit
+	 *
 	 * @return string[]
 	 */
-	public function getUsersByProjectId(string $projectId): array;
+	public function getOrderedUsersByProjectId(string $projectId, int $offset, int $limit): array;
 
 	/**
 	 * @param int $userId
@@ -42,10 +51,10 @@ interface ProjectsUsersRepositoryInterface
 	public function getProjectsByUserId(int $userId) : array;
 
 	/**
-	 * @param int $userId
-	 * @param int $projectId
+	 * @param string $userId
+	 * @param string $projectId
 	 *
 	 * @return bool
 	 */
-	public function checkUserAccess(int $userId, int $projectId) : bool;
+	public function checkUserAccess(string $userId, string $projectId) : bool;
 }

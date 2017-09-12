@@ -41,14 +41,14 @@ class MysqlProjectsUsersRepository implements ProjectsUsersRepositoryInterface
 	}
 
 	/**
-	 * @param int $userId
-	 * @param int $projectId
+	 * @param string $userId
+	 * @param string $projectId
 	 *
 	 * @return void
 	 *
 	 * @throws ProjectUserPairDoesNotExistException
 	 */
-	public function removeUser(int $userId, int $projectId)
+	public function removeUser(string $userId, string $projectId)
 	{
 		if ($this->checkUserAccess($userId, $projectId) === false){
 			throw new ProjectUserPairDoesNotExistException();
@@ -64,12 +64,33 @@ class MysqlProjectsUsersRepository implements ProjectsUsersRepositoryInterface
 	/**
 	 * @param string $projectId
 	 *
-	 * @return string[]
+	 * @return int
 	 */
-	public function getUsersByProjectId(string $projectId): array
+	public function countUsers(string $projectId): int
 	{
 		$sqlQuery = "
-			SELECT user_id FROM projects_users WHERE project_id = '" . $projectId . "';
+			SELECT count(user_id) as count FROM projects_users WHERE project_id = '" . $projectId. "';
+		";
+
+		$results = $this->dbConnection->query($sqlQuery);
+		foreach ($results as $result){
+			return (int) $result['count'];
+		}
+
+		return 0;
+	}
+
+	/**
+	 * @param string $projectId
+	 * @param int $offset
+	 * @param int $limit
+	 *
+	 * @return string[]
+	 */
+	public function getOrderedUsersByProjectId(string $projectId, int $offset, int $limit): array
+	{
+		$sqlQuery = "
+			SELECT user_id FROM projects_users WHERE project_id = '" . $projectId . " ORDER BY user_id LIMIT ' . $limit . ' OFFSET ' . $offset;
 		";
 
 		$usersIds = [];
@@ -102,12 +123,12 @@ class MysqlProjectsUsersRepository implements ProjectsUsersRepositoryInterface
 	}
 
 	/**
-	 * @param int $userId
-	 * @param int $projectId
+	 * @param string $userId
+	 * @param string $projectId
 	 *
 	 * @return bool
 	 */
-	public function checkUserAccess(int $userId, int $projectId): bool
+	public function checkUserAccess(string $userId, string $projectId): bool
 	{
 		$sqlQuery = "
 			SELECT * FROM projects_users WHERE project_id = '" . $projectId . "' AND user_id = '" . $userId . "' LIMIT 1;

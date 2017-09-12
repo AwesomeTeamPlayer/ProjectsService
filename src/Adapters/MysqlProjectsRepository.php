@@ -37,6 +37,25 @@ class MysqlProjectsRepository implements ProjectsRepositoryInterface
 		return $inserted;
 	}
 
+	public function update(Project $project): bool
+	{
+		$sqlQuery = "
+			UPDATE projects SET 
+				name='" . $project->getName() . "', 
+				type='" . $project->getType() . "'
+			WHERE
+				id = '" . $project->getId() . "'
+		";
+
+		return $this->dbConnection->query($sqlQuery);
+	}
+
+	/**
+	 * @param string $projectId
+	 * @return Project
+	 *
+	 * @throws ProjectDoesNotExistException
+	 */
 	public function getProject(string $projectId): Project
 	{
 		$sqlQuery = "
@@ -44,6 +63,9 @@ class MysqlProjectsRepository implements ProjectsRepositoryInterface
 		";
 
 		$results = $this->dbConnection->query($sqlQuery);
+		if ($results->num_rows === 0) {
+			throw new ProjectDoesNotExistException();
+		}
 		foreach ($results as $result){
 			return new Project(
 				$result['id'],
