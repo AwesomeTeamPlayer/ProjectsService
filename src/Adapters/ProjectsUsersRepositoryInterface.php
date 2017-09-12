@@ -8,14 +8,14 @@ use Adapters\Exceptions\ProjectUserPairDoesNotExistException;
 interface ProjectsUsersRepositoryInterface
 {
 	/**
-	 * @param int $userId
-	 * @param int $projectId
+	 * @param string $userId
+	 * @param string $projectId
 	 *
 	 * @return void
 	 *
 	 * @throws DuplicateProjectUserPairException
 	 */
-	public function addUser(int $userId, int $projectId);
+	public function addUser(string $userId, string $projectId);
 
 	/**
 	 * @param int $userId
@@ -28,11 +28,11 @@ interface ProjectsUsersRepositoryInterface
 	public function removeUser(int $userId, int $projectId);
 
 	/**
-	 * @param int $projectId
+	 * @param string $projectId
 	 *
-	 * @return int[]
+	 * @return string[]
 	 */
-	public function getUsersByProjectId(int $projectId): array;
+	public function getUsersByProjectId(string $projectId): array;
 
 	/**
 	 * @param int $userId

@@ -22,14 +22,14 @@ class MysqlProjectsUsersRepository implements ProjectsUsersRepositoryInterface
 	}
 
 	/**
-	 * @param int $userId
-	 * @param int $projectId
+	 * @param string $userId
+	 * @param string $projectId
 	 *
 	 * @return void
 	 *
 	 * @throws DuplicateProjectUserPairException
 	 */
-	public function addUser(int $userId, int $projectId)
+	public function addUser(string $userId, string $projectId)
 	{
 		$sqlQuery = "
 			INSERT INTO projects_users (project_id, user_id) VALUES ('" . $projectId . "', '" . $userId . "');
@@ -62,11 +62,11 @@ class MysqlProjectsUsersRepository implements ProjectsUsersRepositoryInterface
 	}
 
 	/**
-	 * @param int $projectId
+	 * @param string $projectId
 	 *
-	 * @return int[]
+	 * @return string[]
 	 */
-	public function getUsersByProjectId(int $projectId): array
+	public function getUsersByProjectId(string $projectId): array
 	{
 		$sqlQuery = "
 			SELECT user_id FROM projects_users WHERE project_id = '" . $projectId . "';
@@ -75,7 +75,7 @@ class MysqlProjectsUsersRepository implements ProjectsUsersRepositoryInterface
 		$usersIds = [];
 		$results = $this->dbConnection->query($sqlQuery);
 		foreach ($results as $result){
-			$usersIds[] = (int) $result['user_id'];
+			$usersIds[] = $result['user_id'];
 		}
 
 		return $usersIds;
