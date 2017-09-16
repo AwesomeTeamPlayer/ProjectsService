@@ -71,9 +71,23 @@ class MysqlProjectsRepository implements ProjectsRepositoryInterface
 				$result['id'],
 				$result['name'],
 				(int) $result['type'],
-				(bool) $result['is_archived'],
+				$result['is_archived'] === '1',
 				Carbon::parse($result['created_at'])
 			);
 		}
+	}
+
+	public function archivedProject(string $projectId): bool
+	{
+		$sqlQuery = "
+			UPDATE projects SET 
+				is_archived = TRUE
+			WHERE
+				id = '" . $projectId . "' AND
+				is_archived = FALSE
+		";
+
+		$this->dbConnection->query($sqlQuery);
+		return $this->dbConnection->affected_rows === 1;
 	}
 }
