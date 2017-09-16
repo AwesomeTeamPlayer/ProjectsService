@@ -90,4 +90,18 @@ class MysqlProjectsRepository implements ProjectsRepositoryInterface
 		$this->dbConnection->query($sqlQuery);
 		return $this->dbConnection->affected_rows === 1;
 	}
+
+	public function unarchivedProject(string $projectId): bool
+	{
+		$sqlQuery = "
+			UPDATE projects SET 
+				is_archived = FALSE
+			WHERE
+				id = '" . $projectId . "' AND
+				is_archived = TRUE
+		";
+
+		$this->dbConnection->query($sqlQuery);
+		return $this->dbConnection->affected_rows === 1;
+	}
 }

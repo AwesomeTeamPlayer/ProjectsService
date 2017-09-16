@@ -20,4 +20,6 @@ interface ProjectsRepositoryInterface
 
 	public function archivedProject(string $projectId): bool;
 
+	public function unarchivedProject(string $projectId): bool;
+
 }
