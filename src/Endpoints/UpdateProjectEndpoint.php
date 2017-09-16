@@ -78,7 +78,8 @@ class UpdateProjectEndpoint extends AbstractEndpoint
 			$data['name'],
 			$data['type'],
 			false,
-			Carbon::now()
+			Carbon::now(),
+			[]
 		);
 		$this->projectsRepository->update($project);
 		$this->eventSender->sendProjectNameUpdatedEvent($project->getId());

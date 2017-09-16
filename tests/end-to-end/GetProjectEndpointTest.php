@@ -5,10 +5,11 @@ use Adapters\MysqlProjectsUsersRepository;
 use Carbon\Carbon;
 use Domain\EventSender;
 use Domain\ValueObjects\Project;
+use Endpoints\GetProjectEndpoint;
 use Endpoints\UnarchiveProjectEndpoint;
 use Endpoints\InvalidDataException;
 
-class UnarchiveProjectEndpointTest extends AbstractEndToEndTest
+class GetProjectEndpointTest extends AbstractEndToEndTest
 {
 	/**
 	 * @var MysqlProjectsRepository
@@ -18,12 +19,12 @@ class UnarchiveProjectEndpointTest extends AbstractEndToEndTest
 	/**
 	 * @var MysqlProjectsUsersRepository
 	 */
-	private $mysqlProjectsUsersRepository ;
+	private $mysqlProjectsUsersRepository;
 
 	/**
 	 * @var UnarchiveProjectEndpoint
 	 */
-	private $unarchiveProjectEndpoint;
+	private $getProjectEndpoint;
 
 	public function setUp()
 	{
@@ -33,7 +34,7 @@ class UnarchiveProjectEndpointTest extends AbstractEndToEndTest
 			$this->mysqli,
 			$this->mysqlProjectsUsersRepository
 		);
-		$this->unarchiveProjectEndpoint = new UnarchiveProjectEndpoint(
+		$this->getProjectEndpoint = new GetProjectEndpoint(
 			$this->mysqlProjectsRepository,
 			new EventSender($this->channel, 'events')
 		);
@@ -45,7 +46,7 @@ class UnarchiveProjectEndpointTest extends AbstractEndToEndTest
 	public function test_with_incorrect_data($data, $expectedException)
 	{
 		try {
-			$this->unarchiveProjectEndpoint->execute($data);
+			$this->getProjectEndpoint->execute($data);
 		} catch (InvalidDataException $exception) {
 			$this->assertEquals($exception->getErrorTexts(), $expectedException);
 		}
@@ -76,7 +77,7 @@ class UnarchiveProjectEndpointTest extends AbstractEndToEndTest
 	public function test_when_project_does_not_exists()
 	{
 		try {
-			$this->unarchiveProjectEndpoint->execute([
+			$this->getProjectEndpoint->execute([
 				'projectId' => '1234567890',
 			]);
 		} catch (InvalidDataException $exception) {
@@ -88,53 +89,37 @@ class UnarchiveProjectEndpointTest extends AbstractEndToEndTest
 		}
 	}
 
-	public function test_when_project_is_unarchived()
-	{
-		$this->mysqlProjectsRepository->insert(
-			new Project(
-				'1234567890',
-				'Name',
-				123,
-				false,
-				Carbon::now(),
-				[]
-			)
-		);
-
-		$unarchived = $this->unarchiveProjectEndpoint->execute([
-			'projectId' => '1234567890',
-		]);
-
-		$this->assertFalse($unarchived);
-
-		$message = $this->getMessage();
-		$this->assertNull($message);
-	}
-
 	public function test_when_project_is_not_unarchived()
 	{
+		$now = Carbon::now();
+
 		$this->mysqlProjectsRepository->insert(
 			new Project(
 				'1234567890',
 				'Name',
 				123,
 				true,
-				Carbon::now(),
+				$now,
 				[]
 			)
 		);
 
-		$unarchived = $this->unarchiveProjectEndpoint->execute([
+		$this->mysqlProjectsUsersRepository->addUser('user_1', '1234567890');
+		$this->mysqlProjectsUsersRepository->addUser('user_2', '1234567890');
+		$this->mysqlProjectsUsersRepository->addUser('user_3', '1234567890');
+
+		$projectArray = $this->getProjectEndpoint->execute([
 			'projectId' => '1234567890'
 		]);
 
-		$this->assertTrue($unarchived);
-
-		$project = $this->mysqlProjectsRepository->getProject('1234567890');
-		$this->assertFalse($project->isArchived());
-
-		$message = $this->getMessage();
-		$this->checkMessage($message, 'project.unarchived', ['projectId']);
+		$this->assertEquals([
+			"projectId" => '1234567890',
+			"name" => 'Name',
+			"type" => 123,
+			"isArchived" => true,
+			"createdAt" => $now->toIso8601String(),
+			"userIds" => ['user_1', 'user_2', 'user_3']
+		], $projectArray);
 
 		$message = $this->getMessage();
 		$this->assertNull($message);

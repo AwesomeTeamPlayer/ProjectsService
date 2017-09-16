@@ -31,13 +31,19 @@ class Project
 	 */
 	private $createdAt;
 
-	public function __construct(string $id, string $name, int $type, bool $isArchived, Carbon $createdAt)
+	/**
+	 * @var string[]
+	 */
+	private $userIds;
+
+	public function __construct(string $id, string $name, int $type, bool $isArchived, Carbon $createdAt, array $userIds)
 	{
 		$this->id = $id;
 		$this->name = $name;
 		$this->type = $type;
 		$this->isArchived = $isArchived;
 		$this->createdAt = $createdAt;
+		$this->userIds = $userIds;
 	}
 
 	public function getId(): string
@@ -63,6 +69,14 @@ class Project
 	public function getCreatedAt(): Carbon
 	{
 		return $this->createdAt;
+	}
+
+	/**
+	 * @return string[]
+	 */
+	public function getUserIds(): array
+	{
+		return $this->userIds;
 	}
 
 }

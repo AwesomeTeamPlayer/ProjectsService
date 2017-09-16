@@ -28,8 +28,11 @@ class CreateProjectEndpointsTest extends AbstractEndToEndTest
 	public function setUp()
 	{
 		parent::setUp();
-		$this->mysqlProjectsRepository = new MysqlProjectsRepository($this->mysqli);
 		$this->mysqlProjectsUsersRepository = new MysqlProjectsUsersRepository($this->mysqli);
+		$this->mysqlProjectsRepository = new MysqlProjectsRepository(
+			$this->mysqli,
+			$this->mysqlProjectsUsersRepository
+		);
 		$this->createProjectEndpoint = new CreateProjectEndpoint(
 			new ProjectUniqueIdGenerator(),
 			$this->mysqlProjectsUsersRepository,

@@ -28,8 +28,11 @@ class UpdateProjectEndpointsTest extends AbstractEndToEndTest
 	public function setUp()
 	{
 		parent::setUp();
-		$this->mysqlProjectsRepository = new MysqlProjectsRepository($this->mysqli);
 		$this->mysqlProjectsUsersRepository = new MysqlProjectsUsersRepository($this->mysqli);
+		$this->mysqlProjectsRepository = new MysqlProjectsRepository(
+			$this->mysqli,
+			$this->mysqlProjectsUsersRepository
+		);
 		$this->updateProjectEndpoint = new UpdateProjectEndpoint(
 			$this->mysqlProjectsUsersRepository,
 			$this->mysqlProjectsRepository,
@@ -119,7 +122,8 @@ class UpdateProjectEndpointsTest extends AbstractEndToEndTest
 				'Name',
 				123,
 				false,
-				Carbon::now()
+				Carbon::now(),
+				[]
 			)
 		);
 

@@ -1,6 +1,7 @@
 <?php
 
 use Adapters\MysqlProjectsRepository;
+use Adapters\MysqlProjectsUsersRepository;
 use Carbon\Carbon;
 use Domain\EventSender;
 use Domain\ValueObjects\Project;
@@ -15,6 +16,11 @@ class ArchiveProjectEndpointTest extends AbstractEndToEndTest
 	private $mysqlProjectsRepository;
 
 	/**
+	 * @var MysqlProjectsUsersRepository
+	 */
+	private $mysqlProjectsUsersRepository;
+
+	/**
 	 * @var ArchiveProjectEndpoint
 	 */
 	private $archiveProjectEndpoint;
@@ -22,7 +28,11 @@ class ArchiveProjectEndpointTest extends AbstractEndToEndTest
 	public function setUp()
 	{
 		parent::setUp();
-		$this->mysqlProjectsRepository = new MysqlProjectsRepository($this->mysqli);
+		$this->mysqlProjectsUsersRepository = new MysqlProjectsUsersRepository($this->mysqli);
+		$this->mysqlProjectsRepository = new MysqlProjectsRepository(
+			$this->mysqli,
+			$this->mysqlProjectsUsersRepository
+		);
 		$this->archiveProjectEndpoint = new ArchiveProjectEndpoint(
 			$this->mysqlProjectsRepository,
 			new EventSender($this->channel, 'events')
@@ -86,7 +96,8 @@ class ArchiveProjectEndpointTest extends AbstractEndToEndTest
 				'Name',
 				123,
 				true,
-				Carbon::now()
+				Carbon::now(),
+				[]
 			)
 		);
 
@@ -108,7 +119,8 @@ class ArchiveProjectEndpointTest extends AbstractEndToEndTest
 				'Name',
 				123,
 				false,
-				Carbon::now()
+				Carbon::now(),
+				[]
 			)
 		);
 

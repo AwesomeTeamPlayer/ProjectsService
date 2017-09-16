@@ -13,9 +13,18 @@ class MysqlProjectsRepository implements ProjectsRepositoryInterface
 	 */
 	protected $dbConnection;
 
-	public function __construct(mysqli $dbConnection)
+	/**
+	 * @var ProjectsUsersRepositoryInterface
+	 */
+	private $projectsUsersRepository;
+
+	public function __construct(
+		mysqli $dbConnection,
+		ProjectsUsersRepositoryInterface $projectsUsersRepository
+	)
 	{
 		$this->dbConnection = $dbConnection;
+		$this->projectsUsersRepository = $projectsUsersRepository;
 	}
 
 	public function insert(Project $project): bool
@@ -66,13 +75,17 @@ class MysqlProjectsRepository implements ProjectsRepositoryInterface
 		if ($results->num_rows === 0) {
 			throw new ProjectDoesNotExistException();
 		}
+
+		$userIds = $this->projectsUsersRepository->getOrderedUsersByProjectId($projectId, 0, 200);
+
 		foreach ($results as $result){
 			return new Project(
 				$result['id'],
 				$result['name'],
 				(int) $result['type'],
 				$result['is_archived'] === '1',
-				Carbon::parse($result['created_at'])
+				Carbon::parse($result['created_at']),
+				$userIds
 			);
 		}
 	}
