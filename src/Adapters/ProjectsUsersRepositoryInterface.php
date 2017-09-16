@@ -36,12 +36,10 @@ interface ProjectsUsersRepositoryInterface
 
 	/**
 	 * @param string $projectId
-	 * @param int $offset
-	 * @param int $limit
 	 *
 	 * @return string[]
 	 */
-	public function getOrderedUsersByProjectId(string $projectId, int $offset, int $limit): array;
+	public function getOrderedUsersByProjectId(string $projectId): array;
 
 	/**
 	 * @param int $userId

@@ -76,7 +76,7 @@ class MysqlProjectsRepository implements ProjectsRepositoryInterface
 			throw new ProjectDoesNotExistException();
 		}
 
-		$userIds = $this->projectsUsersRepository->getOrderedUsersByProjectId($projectId, 0, 200);
+		$userIds = $this->projectsUsersRepository->getOrderedUsersByProjectId($projectId);
 
 		foreach ($results as $result){
 			return new Project(

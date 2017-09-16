@@ -84,25 +84,15 @@ class UpdateProjectEndpoint extends AbstractEndpoint
 		$this->projectsRepository->update($project);
 		$this->eventSender->sendProjectNameUpdatedEvent($project->getId());
 
-		$perPage = 100;
-		$count = $this->projectsUsersRepository->countUsers($project->getId());
-		$pages = ceil($count / $perPage);
-
 		$userIdsHaveToBe = $data['userIds'];
-		for ($page = 0; $page < $pages; $page++) {
-			$saved = $this->projectsUsersRepository->getOrderedUsersByProjectId(
-				$project->getId(),
-				$page * $perPage,
-				$perPage
-			);
+		$saved = $this->projectsUsersRepository->getOrderedUsersByProjectId($project->getId());
 
-			$toRemove = array_diff($saved, $userIdsHaveToBe);
-			$userIdsHaveToBe = array_diff($userIdsHaveToBe, $saved);
+		$toRemove = array_diff($saved, $userIdsHaveToBe);
+		$userIdsHaveToBe = array_diff($userIdsHaveToBe, $saved);
 
-			foreach ($toRemove as $userIdToRemove) {
-				$this->projectsUsersRepository->removeUser($userIdToRemove, $project->getId());
-				$this->eventSender->sendUserFromProjectRemovedEvent($project->getId(), $userIdToRemove);
-			}
+		foreach ($toRemove as $userIdToRemove) {
+			$this->projectsUsersRepository->removeUser($userIdToRemove, $project->getId());
+			$this->eventSender->sendUserFromProjectRemovedEvent($project->getId(), $userIdToRemove);
 		}
 
 		foreach ($userIdsHaveToBe as $userId) {

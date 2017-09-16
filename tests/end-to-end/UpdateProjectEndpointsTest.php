@@ -143,7 +143,7 @@ class UpdateProjectEndpointsTest extends AbstractEndToEndTest
 		$this->assertEquals('New name', $project->getName());
 		$this->assertEquals(456, $project->getType());
 
-		$userIds = $this->mysqlProjectsUsersRepository->getOrderedUsersByProjectId($projectId, 0, 20);
+		$userIds = $this->mysqlProjectsUsersRepository->getOrderedUsersByProjectId($projectId);
 		$this->assertEquals(['user_11', 'user_12'], $userIds);
 
 		$message = $this->getMessage();

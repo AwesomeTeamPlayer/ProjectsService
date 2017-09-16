@@ -82,15 +82,13 @@ class MysqlProjectsUsersRepository implements ProjectsUsersRepositoryInterface
 
 	/**
 	 * @param string $projectId
-	 * @param int $offset
-	 * @param int $limit
 	 *
 	 * @return string[]
 	 */
-	public function getOrderedUsersByProjectId(string $projectId, int $offset, int $limit): array
+	public function getOrderedUsersByProjectId(string $projectId): array
 	{
 		$sqlQuery = "
-			SELECT * FROM projects_users WHERE project_id = '" . $projectId . "' ORDER BY user_id LIMIT " . $limit . " OFFSET " . $offset .";
+			SELECT * FROM projects_users WHERE project_id = '" . $projectId . "' ORDER BY user_id;
 		";
 
 		$results = $this->dbConnection->query($sqlQuery);
