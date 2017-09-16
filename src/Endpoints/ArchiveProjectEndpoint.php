@@ -10,6 +10,7 @@ use Validator\IsStringValidator;
 use Validator\StringLengthValidator;
 use Validator\ValidationResult;
 use Validator\ValidatorsCollection;
+use Validators\ProjectIdExistsValidator;
 
 class ArchiveProjectEndpoint extends AbstractEndpoint
 {
