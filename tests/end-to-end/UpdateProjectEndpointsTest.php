@@ -5,7 +5,6 @@ use Adapters\MysqlProjectsUsersRepository;
 use Carbon\Carbon;
 use Domain\EventSender;
 use Domain\ValueObjects\Project;
-use Endpoints\CreateProjectEndpoint;
 use Endpoints\InvalidDataException;
 use Endpoints\UpdateProjectEndpoint;
 
