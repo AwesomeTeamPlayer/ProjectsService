@@ -14,9 +14,15 @@ class EventSender
 	 */
 	private $channel;
 
-	public function __construct(AMQPChannel $channel)
+	/**
+	 * @var string
+	 */
+	private $exchangeName;
+
+	public function __construct(AMQPChannel $channel, string $exchangeName)
 	{
 		$this->channel = $channel;
+		$this->exchangeName = $exchangeName;
 	}
 
 	public function sendProjectCreatedEvent(Project $project)
@@ -89,6 +95,6 @@ class EventSender
 	private function publishEvent(string $routingKey, array $event)
 	{
 		$message = new AMQPMessage(json_encode($event));
-		$this->channel->basic_publish($message, 'events', $routingKey);
+		$this->channel->basic_publish($message, $this->exchangeName, $routingKey);
 	}
 }

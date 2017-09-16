@@ -17,7 +17,7 @@ abstract class AbstractEndToEndTest extends TestCase
 	/**
 	 * @var string
 	 */
-	const QUEUE_NAME = 'events';
+	const QUEUE_NAME = 'to_source_listener';
 
 	/**
 	 * @var mysqli
@@ -54,7 +54,6 @@ abstract class AbstractEndToEndTest extends TestCase
 
 		$this->connection = new AMQPStreamConnection('127.0.0.1', 5672, 'guest', 'guest');
 		$this->channel = $this->connection->channel();
-		$this->channel->queue_declare(self::QUEUE_NAME, false, false, false, false);
 	}
 
 	public function tearDown()
@@ -74,5 +73,10 @@ abstract class AbstractEndToEndTest extends TestCase
 		do {
 			$message = $this->channel->basic_get(self::QUEUE_NAME, true);
 		} while ($message !== null);
+	}
+
+	protected function getMessage()
+	{
+		return $this->channel->basic_get(AbstractEndToEndTest::QUEUE_NAME, true);
 	}
 }

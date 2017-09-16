@@ -73,8 +73,8 @@ class MysqlProjectsUsersRepository implements ProjectsUsersRepositoryInterface
 		";
 
 		$results = $this->dbConnection->query($sqlQuery);
-		foreach ($results as $result){
-			return (int) $result['count'];
+		while ($row = $results->fetch_assoc()){
+			return (int) $row['count'];
 		}
 
 		return 0;
@@ -90,13 +90,17 @@ class MysqlProjectsUsersRepository implements ProjectsUsersRepositoryInterface
 	public function getOrderedUsersByProjectId(string $projectId, int $offset, int $limit): array
 	{
 		$sqlQuery = "
-			SELECT user_id FROM projects_users WHERE project_id = '" . $projectId . " ORDER BY user_id LIMIT ' . $limit . ' OFFSET ' . $offset;
+			SELECT * FROM projects_users WHERE project_id = '" . $projectId . "' ORDER BY user_id LIMIT " . $limit . " OFFSET " . $offset .";
 		";
 
-		$usersIds = [];
 		$results = $this->dbConnection->query($sqlQuery);
-		foreach ($results as $result){
-			$usersIds[] = $result['user_id'];
+		if ($results->num_rows === 0) {
+			return [];
+		}
+
+		$usersIds = [];
+		while ($row = $results->fetch_assoc()){
+			$usersIds[] = $row['user_id'];
 		}
 
 		return $usersIds;

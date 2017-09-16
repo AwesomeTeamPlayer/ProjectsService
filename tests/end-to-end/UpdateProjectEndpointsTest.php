@@ -2,6 +2,7 @@
 
 use Adapters\MysqlProjectsRepository;
 use Adapters\MysqlProjectsUsersRepository;
+use Carbon\Carbon;
 use Domain\EventSender;
 use Domain\ValueObjects\Project;
 use Endpoints\CreateProjectEndpoint;
@@ -21,7 +22,7 @@ class UpdateProjectEndpointsTest extends AbstractEndToEndTest
 	private $mysqlProjectsUsersRepository;
 
 	/**
-	 * @var CreateProjectEndpoint
+	 * @var UpdateProjectEndpoint
 	 */
 	private $updateProjectEndpoint;
 
@@ -33,7 +34,7 @@ class UpdateProjectEndpointsTest extends AbstractEndToEndTest
 		$this->updateProjectEndpoint = new UpdateProjectEndpoint(
 			$this->mysqlProjectsUsersRepository,
 			$this->mysqlProjectsRepository,
-			new EventSender($this->channel)
+			new EventSender($this->channel, 'events')
 		);
 	}
 
@@ -119,9 +120,12 @@ class UpdateProjectEndpointsTest extends AbstractEndToEndTest
 				'Name',
 				123,
 				false,
-				['user_1', 'user_2']
+				Carbon::now()
 			)
 		);
+
+		$this->mysqlProjectsUsersRepository->addUser('user_1', '1234567890');
+		$this->mysqlProjectsUsersRepository->addUser('user_2', '1234567890');
 
 		$projectId = $this->updateProjectEndpoint->execute([
 			'projectId' => '1234567890',
@@ -136,8 +140,8 @@ class UpdateProjectEndpointsTest extends AbstractEndToEndTest
 		$this->assertEquals('New name', $project->getName());
 		$this->assertEquals(456, $project->getType());
 
-		$userIds = $this->mysqlProjectsUsersRepository->getOrderedUsersByProjectId($projectId);
-		$this->assertEquals(['user_1', 'user_2'], $userIds);
+		$userIds = $this->mysqlProjectsUsersRepository->getOrderedUsersByProjectId($projectId, 0, 20);
+		$this->assertEquals(['user_11', 'user_12'], $userIds);
 
 //		$message = $this->channel->basic_get(AbstractEndToEndTest::QUEUE_NAME, true);
 //		$this->assertEquals('project.created', $message->delivery_info['routing_key']);

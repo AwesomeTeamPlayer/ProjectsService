@@ -34,7 +34,7 @@ class CreateProjectEndpointsTest extends AbstractEndToEndTest
 			new ProjectUniqueIdGenerator(),
 			$this->mysqlProjectsUsersRepository,
 			$this->mysqlProjectsRepository,
-			new EventSender($this->channel)
+			new EventSender($this->channel, 'events')
 		);
 	}
 
@@ -102,7 +102,7 @@ class CreateProjectEndpointsTest extends AbstractEndToEndTest
 		$this->assertEquals('Project Name', $project->getName());
 		$this->assertEquals(123, $project->getType());
 
-		$userIds = $this->mysqlProjectsUsersRepository->getOrderedUsersByProjectId($projectId);
+		$userIds = $this->mysqlProjectsUsersRepository->getOrderedUsersByProjectId($projectId, 0, 20);
 		$this->assertEquals([], $userIds);
 	}
 
@@ -120,10 +120,10 @@ class CreateProjectEndpointsTest extends AbstractEndToEndTest
 		$this->assertEquals('Project Name', $project->getName());
 		$this->assertEquals(123, $project->getType());
 
-		$userIds = $this->mysqlProjectsUsersRepository->getOrderedUsersByProjectId($projectId);
+		$userIds = $this->mysqlProjectsUsersRepository->getOrderedUsersByProjectId($projectId, 0, 20);
 		$this->assertEquals(['user_1', 'user_2'], $userIds);
 
-		$message = $this->channel->basic_get(AbstractEndToEndTest::QUEUE_NAME, true);
+		$message = $this->getMessage();
 		$this->assertEquals('project.created', $message->delivery_info['routing_key']);
 		$this->assertEquals('project.created', json_decode($message->getBody(), true)['name']);
 		$this->assertEquals([
@@ -134,7 +134,7 @@ class CreateProjectEndpointsTest extends AbstractEndToEndTest
 			'projectId', 'name', 'type', 'createdAt'
 		], array_keys(json_decode($message->getBody(), true)['data'] ));
 
-		$message = $this->channel->basic_get(AbstractEndToEndTest::QUEUE_NAME, true);
+		$message = $this->getMessage();
 		$this->assertEquals('project.user.added', $message->delivery_info['routing_key']);
 		$this->assertEquals('project.user.added', json_decode($message->getBody(), true)['name']);
 		$this->assertEquals('user_1', json_decode($message->getBody(), true)['data']['userId']);
@@ -142,7 +142,7 @@ class CreateProjectEndpointsTest extends AbstractEndToEndTest
 			'projectId', 'userId'
 		], array_keys(json_decode($message->getBody(), true)['data'] ));
 
-		$message = $this->channel->basic_get(AbstractEndToEndTest::QUEUE_NAME, true);
+		$message = $this->getMessage();
 		$this->assertEquals('project.user.added', $message->delivery_info['routing_key']);
 		$this->assertEquals('project.user.added', json_decode($message->getBody(), true)['name']);
 		$this->assertEquals('user_2', json_decode($message->getBody(), true)['data']['userId']);
