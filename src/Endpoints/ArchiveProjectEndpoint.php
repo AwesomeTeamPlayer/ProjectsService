@@ -39,7 +39,7 @@ class ArchiveProjectEndpoint extends AbstractEndpoint
 				new IsNotNullValidator(),
 				new IsStringValidator(),
 				new StringLengthValidator(10, 10),
-//				new ProjectIdExistsValidator($this->projectsRepository)
+				new ProjectIdExistsValidator($this->projectsRepository)
 			]),
 		];
 		$arrayValidator = new ArrayValidator();
