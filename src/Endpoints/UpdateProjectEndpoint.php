@@ -81,7 +81,7 @@ class UpdateProjectEndpoint extends AbstractEndpoint
 			Carbon::now()
 		);
 		$this->projectsRepository->update($project);
-		$this->eventSender->sendProjectCreatedEvent($project);
+		$this->eventSender->sendProjectNameUpdatedEvent($project->getId());
 
 		$perPage = 100;
 		$count = $this->projectsUsersRepository->countUsers($project->getId());

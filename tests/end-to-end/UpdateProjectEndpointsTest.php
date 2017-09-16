@@ -143,31 +143,23 @@ class UpdateProjectEndpointsTest extends AbstractEndToEndTest
 		$userIds = $this->mysqlProjectsUsersRepository->getOrderedUsersByProjectId($projectId, 0, 20);
 		$this->assertEquals(['user_11', 'user_12'], $userIds);
 
-//		$message = $this->channel->basic_get(AbstractEndToEndTest::QUEUE_NAME, true);
-//		$this->assertEquals('project.created', $message->delivery_info['routing_key']);
-//		$this->assertEquals('project.created', json_decode($message->getBody(), true)['name']);
-//		$this->assertEquals([
-//			'name' => 'Project Name',
-//			'type' => 123,
-//		], array_diff_key(json_decode($message->getBody(), true)['data'], ['projectId' => '', 'createdAt' => '']));
-//		$this->assertEquals([
-//			'projectId', 'name', 'type', 'createdAt'
-//		], array_keys(json_decode($message->getBody(), true)['data'] ));
-//
-//		$message = $this->channel->basic_get(AbstractEndToEndTest::QUEUE_NAME, true);
-//		$this->assertEquals('project.user.added', $message->delivery_info['routing_key']);
-//		$this->assertEquals('project.user.added', json_decode($message->getBody(), true)['name']);
-//		$this->assertEquals('user_1', json_decode($message->getBody(), true)['data']['userId']);
-//		$this->assertEquals([
-//			'projectId', 'userId'
-//		], array_keys(json_decode($message->getBody(), true)['data'] ));
-//
-//		$message = $this->channel->basic_get(AbstractEndToEndTest::QUEUE_NAME, true);
-//		$this->assertEquals('project.user.added', $message->delivery_info['routing_key']);
-//		$this->assertEquals('project.user.added', json_decode($message->getBody(), true)['name']);
-//		$this->assertEquals('user_2', json_decode($message->getBody(), true)['data']['userId']);
-//		$this->assertEquals([
-//			'projectId', 'userId'
-//		], array_keys(json_decode($message->getBody(), true)['data'] ));
+		$message = $this->getMessage();
+		$this->checkMessage($message, 'project.name.updated', ['projectId']);
+
+		$message = $this->getMessage();
+		$this->checkMessage($message, 'project.user.removed', ['projectId', 'userId']);
+		$this->assertEquals('user_1', json_decode($message->getBody(), true)['userId']);
+
+		$message = $this->getMessage();
+		$this->checkMessage($message, 'project.user.removed', ['projectId', 'userId']);
+		$this->assertEquals('user_2', json_decode($message->getBody(), true)['userId']);
+
+		$message = $this->getMessage();
+		$this->checkMessage($message, 'project.user.added', ['projectId', 'userId']);
+		$this->assertEquals('user_11', json_decode($message->getBody(), true)['userId']);
+
+		$message = $this->getMessage();
+		$this->checkMessage($message, 'project.user.added', ['projectId', 'userId']);
+		$this->assertEquals('user_12', json_decode($message->getBody(), true)['userId']);
 	}
 }

@@ -2,10 +2,9 @@
 
 namespace Domain;
 
-use Carbon\Carbon;
-use Domain\ValueObjects\Project;
 use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Message\AMQPMessage;
+use PhpAmqpLib\Wire\AMQPTable;
 
 class EventSender
 {
@@ -25,76 +24,76 @@ class EventSender
 		$this->exchangeName = $exchangeName;
 	}
 
-	public function sendProjectCreatedEvent(Project $project)
+	public function sendProjectCreatedEvent(string $projectId)
 	{
-		$name = 'project.created';
-		$event = $this->buildEvent($name, [
-			"projectId" => $project->getId(),
-		    "name" => $project->getName(),
-		    "type" => $project->getType(),
-		    "createdAt" => $project->getCreatedAt()->toIso8601String(),
-		]);
-
-		$this->publishEvent($name, $event);
+		$this->publishEvent(
+			'project.created',
+			[
+				'projectId' => $projectId
+			]
+		);
 	}
 
-	public function sendProjectUpdatedEvent(Project $project)
+	public function sendProjectNameUpdatedEvent(string $projectId)
 	{
-		$event = $this->buildEvent('project.updated', [
-			"projectId" => $project->getId(),
-			"name" => $project->getName(),
-			"type" => $project->getType(),
-		]);
+		$this->publishEvent(
+			'project.name.updated',
+			[
+				'projectId' => $projectId
+			]
+		);
 	}
 
 	public function sendUserToProjectAddedEvent(string $projectId, string $userId)
 	{
-		$name = 'project.user.added';
-		$event = $this->buildEvent($name, [
-			"projectId" => $projectId,
-			"userId" => $userId,
-		]);
-
-		$this->publishEvent($name, $event);
+		$this->publishEvent(
+			'project.user.added',
+			[
+				'projectId' => $projectId,
+				'userId' => $userId,
+			]
+		);
 	}
 
 	public function sendUserFromProjectRemovedEvent(string $projectId, string $userId)
 	{
-		$name = 'project.user.removed';
-		$event = $this->buildEvent($name, [
-			"projectId" => $projectId,
-			"userId" => $userId,
-		]);
-
-		$this->publishEvent($name, $event);
+		$this->publishEvent(
+			'project.user.removed',
+			[
+				'projectId' => $projectId,
+				'userId' => $userId,
+			]
+		);
 	}
 
 	public function sendProjectArchivedEvent(string $projectId)
 	{
-		$event = $this->buildEvent('project.archived', [
-			"projectId" => $projectId,
-		]);
+		$this->publishEvent(
+			'project.archived',
+			[
+				'projectId' => $projectId,
+			]
+		);
 	}
 
 	public function sendProjectUnarchivedEvent(string $projectId)
 	{
-		$event = $this->buildEvent('project.unarchived', [
-			"projectId" => $projectId,
-		]);
-	}
-
-	private function buildEvent(string $name, array $data)
-	{
-		return [
-			'name' => $name,
-			'occurredAt' => Carbon::now()->toIso8601String(),
-			'data' => $data,
-		];
+		$this->publishEvent(
+			'project.unarchived',
+			[
+				'projectId' => $projectId,
+			]
+		);
 	}
 
 	private function publishEvent(string $routingKey, array $event)
 	{
+		$headers = new AMQPTable([]);
+		$headers->set('occurred-at', time());
+
 		$message = new AMQPMessage(json_encode($event));
+		$message->set('application_headers', $headers);
+
 		$this->channel->basic_publish($message, $this->exchangeName, $routingKey);
 	}
 }

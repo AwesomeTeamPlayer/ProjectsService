@@ -82,7 +82,7 @@ class CreateProjectEndpoint extends AbstractEndpoint
 			Carbon::now()
 		);
 		$this->projectsRepository->insert($project);
-		$this->eventSender->sendProjectCreatedEvent($project);
+		$this->eventSender->sendProjectCreatedEvent($project->getId());
 
 		foreach ($data['userIds'] as $userId) {
 			$this->projectsUsersRepository->addUser($userId, $project->getId());

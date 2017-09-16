@@ -1,16 +1,7 @@
 <?php
 
-use Api\ApplicationBuilder;
-use Api\ApplicationConfig;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 use PHPUnit\Framework\TestCase;
-use Slim\App;
-use Slim\Http\Environment;
-use Slim\Http\Headers;
-use Slim\Http\Request;
-use Slim\Http\RequestBody;
-use Slim\Http\Response;
-use Slim\Http\Uri;
 
 abstract class AbstractEndToEndTest extends TestCase
 {
@@ -78,5 +69,12 @@ abstract class AbstractEndToEndTest extends TestCase
 	protected function getMessage()
 	{
 		return $this->channel->basic_get(AbstractEndToEndTest::QUEUE_NAME, true);
+	}
+
+	protected function checkMessage($message, $routingKey, $requiredKeysInJson)
+	{
+		$this->assertEquals($routingKey, $message->delivery_info['routing_key']);
+		$this->assertGreaterThan(0, $message->get('application_headers')->getNativeData()['occurred-at']);
+		$this->assertEquals($requiredKeysInJson, array_keys(json_decode($message->getBody(), true)));
 	}
 }
