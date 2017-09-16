@@ -24,28 +24,17 @@ Example:
 
 It returns string with project ID.
 
-It creates events:
+It creates events *project.created*:
 ```json
 {
-  "name": "project.created",
-  "occurredAt": "...",
-  "data": {
-    "projectId": "projectId",
-    "name":"New project name",
-    "type": 123,
-    "createdAt": "2012-12-12T13:22:35+04:00"
-  }
+    "projectId": "projectId"
 }
 ```
-and for each user:
+and for each user *project.user.added*:
 ```json
 {
-  "name": "project.user.added",
-  "occurredAt": "...",
-  "data": {
     "projectId": "projectId",
     "userId": "user_1"
-  }
 }
 ```
 
@@ -67,39 +56,25 @@ to that project. Other users will be removed
 
 It return *true*
 
-It create events:
+It create *project.name.updated* event:
 ```json
 {
-  "name": "project.updated",
-  "occurredAt": "...",
-  "data": {
-    "projectId": "projectId",
-    "name":"Updated project name",
-    "type": 456
-  }
+    "projectId": "projectId"
 }
 ```
 
-It creates events per each user
+It creates events *project.user.added* per each user
 ```json
 {
-  "name": "project.user.added",
-  "occurredAt": "...",
-  "data": {
     "projectId": "projectId",
     "userId": "user_5"
-  }
 }
 ```
-or/and
+or/and *project.user.removed*
 ```json
 {
-  "name": "project.user.removed",
-  "occurredAt": "...",
-  "data": {
     "projectId": "projectId",
     "userId": "user_5"
-  }
 }
 ```
 
@@ -119,15 +94,11 @@ Example:
 
 It returns *true*.
 
-It creates events per each user
+It creates *project.user.added* events per each user
 ```json
 {
-  "name": "project.user.added",
-  "occurredAt": "...",
-  "data": {
-    "projectId": "h1dhe2da7",
-    "userId": "user_1"
-  }
+    "projectId": "projectId",
+    "userId": "user_5"
 }
 ```
 
@@ -147,15 +118,11 @@ Example:
 
 It returns *true*.
 
-It creates events per each user
+It creates *project.user.removed* events per each user
 ```json
 {
-  "name": "project.user.removed",
-  "occurredAt": "...",
-  "data": {
-    "projectId": "h1dhe2da7",
-    "userId": "user_1"
-  }
+    "projectId": "projectId",
+    "userId": "user_5"
 }
 ```
 
@@ -240,14 +207,10 @@ Example:
 It returns *true* if project exists and can be archived (it was not archived before) 
 or *false* otherwise.
 
-It creates event
+It creates *project.archived* event
 ```json
 {
-  "name": "project.archived",
-  "occurredAt": "...",
-  "data": {
     "projectId": "h1dhe2da7"
-  }
 }
 ```
 
@@ -266,13 +229,9 @@ Example:
 It returns *true* if project exists and can be unarchived (it was archived before)
 or *false* otherwise.
 
-It creates event
+It creates *project.unarchived* event
 ```json
 {
-  "name": "project.unarchived",
-  "occurredAt": "...",
-  "data": {
-    "projectId": "h1dhe2da7"
-  }
+  "projectId": "projectId_1"
 }
 ```
