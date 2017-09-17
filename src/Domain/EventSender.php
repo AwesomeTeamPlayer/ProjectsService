@@ -44,6 +44,16 @@ class EventSender
 		);
 	}
 
+	public function sendProjectTypeUpdatedEvent(string $projectId)
+	{
+		$this->publishEvent(
+			'project.type.updated',
+			[
+				'projectId' => $projectId
+			]
+		);
+	}
+
 	public function sendUserToProjectAddedEvent(string $projectId, string $userId)
 	{
 		$this->publishEvent(

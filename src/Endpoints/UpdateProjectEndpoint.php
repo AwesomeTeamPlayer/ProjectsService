@@ -79,6 +79,8 @@ class UpdateProjectEndpoint extends AbstractEndpoint
 
 	protected function run(array $data)
 	{
+		$oldProject = $this->projectsRepository->getProject($data['projectId']);
+
 		$project = new Project(
 			$data['projectId'],
 			$data['name'],
@@ -88,7 +90,14 @@ class UpdateProjectEndpoint extends AbstractEndpoint
 			[]
 		);
 		$this->projectsRepository->update($project);
-		$this->eventSender->sendProjectNameUpdatedEvent($project->getId());
+
+		if ($oldProject->getName() !== $project->getName()) {
+			$this->eventSender->sendProjectNameUpdatedEvent($project->getId());
+		}
+
+		if ($oldProject->getType() !== $project->getType()) {
+			$this->eventSender->sendProjectTypeUpdatedEvent($project->getId());
+		}
 
 		$userIdsHaveToBe = $data['userIds'];
 		$saved = $this->projectsUsersRepository->getOrderedUsersByProjectId($project->getId());

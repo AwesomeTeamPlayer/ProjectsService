@@ -120,7 +120,7 @@ class UpdateProjectEndpointsTest extends AbstractEndToEndTest
 		}
 	}
 
-	public function test_correct_with_users()
+	public function test_correct_when_update_everything()
 	{
 		$this->mysqlProjectsRepository->insert(
 			new Project(
@@ -156,6 +156,9 @@ class UpdateProjectEndpointsTest extends AbstractEndToEndTest
 		$this->checkMessage($message, 'project.name.updated', ['projectId']);
 
 		$message = $this->getMessage();
+		$this->checkMessage($message, 'project.type.updated', ['projectId']);
+
+		$message = $this->getMessage();
 		$this->checkMessage($message, 'project.user.removed', ['projectId', 'userId']);
 		$this->assertEquals('user_1', json_decode($message->getBody(), true)['userId']);
 
@@ -170,5 +173,78 @@ class UpdateProjectEndpointsTest extends AbstractEndToEndTest
 		$message = $this->getMessage();
 		$this->checkMessage($message, 'project.user.added', ['projectId', 'userId']);
 		$this->assertEquals('user____12', json_decode($message->getBody(), true)['userId']);
+	}
+
+
+	public function test_correct_when_update_only_name()
+	{
+		$this->mysqlProjectsRepository->insert(
+			new Project(
+				'1234567890',
+				'Name',
+				123,
+				false,
+				Carbon::now(),
+				[]
+			)
+		);
+
+		$this->mysqlProjectsUsersRepository->addUser('user_____1', '1234567890');
+		$this->mysqlProjectsUsersRepository->addUser('user_____2', '1234567890');
+
+		$projectId = $this->updateProjectEndpoint->execute([
+			'projectId' => '1234567890',
+			'name' => 'New name',
+			'type' => 123,
+			'userIds' => ['user_____1', 'user_____2']
+		]);
+
+		$project = $this->mysqlProjectsRepository->getProject($projectId);
+
+		$this->assertEquals($projectId, $project->getId());
+		$this->assertEquals('New name', $project->getName());
+		$this->assertEquals(123, $project->getType());
+
+		$message = $this->getMessage();
+		$this->checkMessage($message, 'project.name.updated', ['projectId']);
+
+		$message = $this->getMessage();
+		$this->assertNull($message);
+	}
+
+	public function test_correct_when_update_only_type()
+	{
+		$this->mysqlProjectsRepository->insert(
+			new Project(
+				'1234567890',
+				'Name',
+				123,
+				false,
+				Carbon::now(),
+				[]
+			)
+		);
+
+		$this->mysqlProjectsUsersRepository->addUser('user_____1', '1234567890');
+		$this->mysqlProjectsUsersRepository->addUser('user_____2', '1234567890');
+
+		$projectId = $this->updateProjectEndpoint->execute([
+			'projectId' => '1234567890',
+			'name' => 'Name',
+			'type' => 456,
+			'userIds' => ['user_____1', 'user_____2']
+		]);
+
+		$project = $this->mysqlProjectsRepository->getProject($projectId);
+
+		$this->assertEquals($projectId, $project->getId());
+		$this->assertEquals('Name', $project->getName());
+		$this->assertEquals(456, $project->getType());
+
+		$message = $this->getMessage();
+		$this->checkMessage($message, 'project.type.updated', ['projectId']);
+
+		$message = $this->getMessage();
+		$this->assertNull($message);
 	}
 }

@@ -69,14 +69,21 @@ to that project. Other users will be removed
 
 It return *true*
 
-It create *project.name.updated* event:
+It create *project.name.updated* event if name was changed:
 ```json
 {
     "projectId": "projectId"
 }
 ```
 
-It creates events *project.user.added* per each user
+It create *project.type.updated* event if type was changed:
+```json
+{
+    "projectId": "projectId"
+}
+```
+
+It creates events *project.user.added* per each added user
 ```json
 {
     "projectId": "projectId",
