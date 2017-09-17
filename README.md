@@ -20,7 +20,7 @@ This service needs configured below variables:
 * RABBITMQ_PASSWORD
 * RABBITMQ_EXCHANGE_NAME
 
-## CreateProject
+## createProject 
 Parameters:
 * name (string)
 * type (int)
@@ -51,7 +51,7 @@ and for each user *project.user.added*:
 }
 ```
 
-## Update project data
+## updateProject
 Parameters:
 * projectId (string) 
 * name (string) [optional]
@@ -92,7 +92,7 @@ or/and *project.user.removed*
 ```
 
 
-## Add users to a project
+## addUsersToProject
 Parameters:
 * projectId (string) 
 * userIds (array of strings)
@@ -116,7 +116,7 @@ It creates *project.user.added* events per each user
 ```
 
 
-## Remove users from a project
+## removeUsersFromProject
 Parameters:
 * projectId (string) 
 * userIds (array of strings)
@@ -139,7 +139,7 @@ It creates *project.user.removed* events per each user
 }
 ```
 
-## List all projects
+## listProjects
 Parameters:
 * userId (string)
 * page (positive integer)
@@ -179,7 +179,7 @@ It returns
 ```
 
 
-## Get information about specific project
+## getProject
 Parameters:
 * projectId (string)
 
@@ -206,7 +206,7 @@ or *false* otherwise.
 
 
 
-## Archived specific project
+## archiveProject
 Parameters:
 * projectId (string)
 
@@ -228,7 +228,7 @@ It creates *project.archived* event
 ```
 
 
-## Unarchived specific project
+## unarchiveProject
 Parameters:
 * projectId (string)
 
