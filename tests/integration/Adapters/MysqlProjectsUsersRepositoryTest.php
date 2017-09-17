@@ -55,24 +55,6 @@ class MysqlProjectsUsersRepositoryTest extends TestCase
 		$repository->removeUser(123, 456);
 	}
 
-	public function test_getUsersByProjectId_when_database_is_empty()
-	{
-		$repository = new MysqlProjectsUsersRepository($this->mysqli);
-		$result = $repository->getUsersByProjectId(456);
-		$this->assertEmpty($result);
-	}
-
-	public function test_getUsersByProjectId()
-	{
-		$repository = new MysqlProjectsUsersRepository($this->mysqli);
-		$repository->addUser(1, 456);
-		$repository->addUser(2, 456);
-		$repository->addUser(3, 456);
-		$repository->addUser(4, 999);
-		$result = $repository->getUsersByProjectId(456);
-		$this->assertEquals([1, 2, 3], $result);
-	}
-
 	public function test_getProjectsByUserId_when_database_is_empty()
 	{
 		$repository = new MysqlProjectsUsersRepository($this->mysqli);
