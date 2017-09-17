@@ -2,6 +2,7 @@
 
 namespace Endpoints;
 
+use Adapters\Exceptions\DuplicateProjectUserPairException;
 use Adapters\ProjectsRepositoryInterface;
 use Adapters\ProjectsUsersRepositoryInterface;
 use Domain\EventSender;
@@ -15,7 +16,7 @@ use Validator\ValidationResult;
 use Validator\ValidatorsCollection;
 use Validators\ProjectIdExistsValidator;
 
-class AddUserToProjectEndpoint extends AbstractEndpoint
+class AddUsersToProjectEndpoint extends AbstractEndpoint
 {
 	/**
 	 * @var ProjectsUsersRepositoryInterface
@@ -70,8 +71,12 @@ class AddUserToProjectEndpoint extends AbstractEndpoint
 		$projectId = $data['projectId'];
 
 		foreach ($data['userIds'] as $userId) {
-			$this->projectsUsersRepository->addUser($userId, $projectId);
-			$this->eventSender->sendUserToProjectAddedEvent($projectId, $userId);
+			try {
+				$this->projectsUsersRepository->addUser($userId, $projectId);
+				$this->eventSender->sendUserToProjectAddedEvent($projectId, $userId);
+			} catch (DuplicateProjectUserPairException $exception) {
+			}
+
 		}
 
 		return true;

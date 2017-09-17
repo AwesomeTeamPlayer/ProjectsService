@@ -6,11 +6,10 @@ use Adapters\MysqlProjectsUsersRepository;
 use Carbon\Carbon;
 use Domain\EventSender;
 use Domain\ValueObjects\Project;
-use Endpoints\AddUserToProjectEndpoint;
-use Endpoints\CreateProjectEndpoint;
+use Endpoints\AddUsersToProjectEndpoint;
 use Endpoints\InvalidDataException;
 
-class AddUserToProjectEndpointTest extends AbstractEndToEndTest
+class AddUsersToProjectEndpointTest extends AbstractEndToEndTest
 {
 	/**
 	 * @var MysqlProjectsRepository
@@ -23,7 +22,7 @@ class AddUserToProjectEndpointTest extends AbstractEndToEndTest
 	private $mysqlProjectsUsersRepository;
 
 	/**
-	 * @var CreateProjectEndpoint
+	 * @var AddUsersToProjectEndpoint
 	 */
 	private $addUsersToProjectEndpoint;
 
@@ -35,7 +34,7 @@ class AddUserToProjectEndpointTest extends AbstractEndToEndTest
 			$this->mysqli,
 			$this->mysqlProjectsUsersRepository
 		);
-		$this->addUsersToProjectEndpoint = new AddUserToProjectEndpoint(
+		$this->addUsersToProjectEndpoint = new AddUsersToProjectEndpoint(
 			$this->mysqlProjectsUsersRepository,
 			$this->mysqlProjectsRepository,
 			new EventSender($this->channel, 'events')
@@ -126,7 +125,7 @@ class AddUserToProjectEndpointTest extends AbstractEndToEndTest
 
 		$result = $this->addUsersToProjectEndpoint->execute([
 			'projectId' => 'project__1',
-			'userIds' => ['user____11', 'user____12']
+			'userIds' => ['user____11', 'user____12', 'user_____1']
 		]);
 		$this->assertTrue($result);
 
