@@ -139,8 +139,8 @@ Example:
 ```json
 {
   "userId": "user_1",
-  "page": 1,
-  "offset": 20,
+  "page": 0,
+  "limit": 20,
   "filter": "unarchived",
   "orderBy": "name",
   "order": "desc"

@@ -22,4 +22,24 @@ interface ProjectsRepositoryInterface
 
 	public function unarchivedProject(string $projectId): bool;
 
+	/**
+	 * @param string $userId
+	 * @param bool[] $archived
+	 * @param int $limit
+	 * @param int $offset
+	 * @param string $orderBy
+	 * @param string $order
+	 *
+	 * @return Project[]
+	 */
+	public function getAllProjects(string $userId, array $archived, int $limit, int $offset, string $orderBy, string $order): array;
+
+	/**
+	 * @param string $userId
+	 * @param bool[] $archived
+	 *
+	 * @return int
+	 */
+	public function countAllProjects(string $userId, array $archived): int;
+
 }

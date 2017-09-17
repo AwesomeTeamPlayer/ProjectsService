@@ -117,4 +117,94 @@ class MysqlProjectsRepository implements ProjectsRepositoryInterface
 		$this->dbConnection->query($sqlQuery);
 		return $this->dbConnection->affected_rows === 1;
 	}
+
+	/**
+	 * @param string $userId
+	 * @param bool[] $archived
+	 * @param int $limit
+	 * @param int $offset
+	 * @param string $orderBy
+	 * @param string $order
+	 *
+	 * @return Project[]
+	 */
+	public function getAllProjects(string $userId, array $archived, int $limit, int $offset, string $orderBy, string $order): array
+	{
+		foreach ($archived as $key => $value) {
+			if ($value) {
+				$archived[$key] = 'TRUE';
+			} else {
+				$archived[$key] = 'FALSE';
+			}
+		}
+
+		$sqlQuery = "
+			SELECT 
+			 	projects.*
+			FROM projects 
+				JOIN projects_users ON projects.id = projects_users.project_id 
+			WHERE 
+				projects.is_archived IN (" . implode(',', $archived) . ") AND
+				projects_users.user_id = '" . $userId . "'
+			ORDER BY
+				" . $this->convertOrderBy($orderBy) . " " . $order . "
+			LIMIT " . $limit . " OFFSET " . $offset . "
+		";
+
+		$results = $this->dbConnection->query($sqlQuery);
+
+		$projects = [];
+		while ($row = $results->fetch_assoc()) {
+			$userIds = $this->projectsUsersRepository->getOrderedUsersByProjectId($row['id']);
+
+			$projects[] = new Project(
+				$row['id'],
+				$row['name'],
+				(int) $row['type'],
+				$row['is_archived'] === '1',
+				Carbon::parse($row['created_at']),
+				$userIds
+			);
+		}
+
+		return $projects;
+	}
+
+	private function convertOrderBy(string $orderBy): string
+	{
+		if ($orderBy === 'createdAt') {
+			return 'created_at';
+		}
+
+		return $orderBy;
+	}
+
+	public function countAllProjects(string $userId, array $archived): int
+	{
+		foreach ($archived as $key => $value) {
+			if ($value) {
+				$archived[$key] = 'TRUE';
+			} else {
+				$archived[$key] = 'FALSE';
+			}
+		}
+
+		$sqlQuery = "
+			SELECT 
+			 	COUNT(projects.id) as count
+			FROM projects 
+				JOIN projects_users ON projects.id = projects_users.project_id 
+			WHERE 
+				projects.is_archived IN (" . implode(',', $archived) . ") AND
+				projects_users.user_id = '" . $userId . "'
+		";
+
+		$results = $this->dbConnection->query($sqlQuery);
+		while ($row = $results->fetch_assoc()){
+			return (int) $row['count'];
+		}
+
+		return 0;
+	}
+
 }
