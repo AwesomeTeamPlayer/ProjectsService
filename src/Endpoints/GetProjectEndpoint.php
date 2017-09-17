@@ -3,7 +3,6 @@
 namespace Endpoints;
 
 use Adapters\ProjectsRepositoryInterface;
-use Domain\EventSender;
 use Validator\ArrayValidator;
 use Validator\IsNotNullValidator;
 use Validator\IsStringValidator;
@@ -19,18 +18,11 @@ class GetProjectEndpoint extends AbstractEndpoint
 	 */
 	private $projectsRepository;
 
-	/**
-	 * @var EventSender
-	 */
-	private $eventSender;
-
 	public function __construct(
-		ProjectsRepositoryInterface $projectsRepository,
-		EventSender $eventSender
+		ProjectsRepositoryInterface $projectsRepository
 	)
 	{
 		$this->projectsRepository = $projectsRepository;
-		$this->eventSender = $eventSender;
 	}
 
 	protected function validate(array $data): ValidationResult

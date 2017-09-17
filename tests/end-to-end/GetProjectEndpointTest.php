@@ -3,7 +3,6 @@
 use Adapters\MysqlProjectsRepository;
 use Adapters\MysqlProjectsUsersRepository;
 use Carbon\Carbon;
-use Domain\EventSender;
 use Domain\ValueObjects\Project;
 use Endpoints\GetProjectEndpoint;
 use Endpoints\UnarchiveProjectEndpoint;
@@ -35,8 +34,7 @@ class GetProjectEndpointTest extends AbstractEndToEndTest
 			$this->mysqlProjectsUsersRepository
 		);
 		$this->getProjectEndpoint = new GetProjectEndpoint(
-			$this->mysqlProjectsRepository,
-			new EventSender($this->channel, 'events')
+			$this->mysqlProjectsRepository
 		);
 	}
 
