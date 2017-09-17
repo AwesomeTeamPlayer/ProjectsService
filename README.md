@@ -7,6 +7,19 @@ Basic definitions:
 
 In examples below user's and project's IDs have less characters to keep those examples clear.
 
+## Configuration
+This service needs configured below variables:
+* MYSQL_HOST
+* MYSQL_PORT
+* MYSQL_USER
+* MYSQL_PASSWORD
+* MYSQL_DATABASE
+* RABBITMQ_HOST
+* RABBITMQ_PORT
+* RABBITMQ_USER
+* RABBITMQ_PASSWORD
+* RABBITMQ_EXCHANGE_NAME
+
 ## CreateProject
 Parameters:
 * name (string)
