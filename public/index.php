@@ -178,7 +178,7 @@ $rabbitMqUser = getenv('RABBITMQ_USER');
 $rabbitMqPassword = getenv('RABBITMQ_PASSWORD');
 $rabbitMqExchangeName = getenv('RABBITMQ_EXCHANGE_NAME');
 
-$mysqli = new mysqli($mysqlHost, $mysqlPort, $mysqlUser, $mysqlPassword, $mysqlDatabase)
+$mysqli = new mysqli($mysqlHost, $mysqlPort, $mysqlUser, $mysqlPassword, $mysqlDatabase);
 
 $projectUniqueIdGenerator = new ProjectUniqueIdGenerator();
 $projectsUsersRepository = new MysqlProjectsUsersRepository($mysqli);
