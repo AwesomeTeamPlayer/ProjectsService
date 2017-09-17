@@ -11,7 +11,9 @@ use Domain\ValueObjects\Project;
 use Validator\ArrayValidator;
 use Validator\IsIntegerValidator;
 use Validator\IsNotNullValidator;
+use Validator\IsSetValidator;
 use Validator\IsStringValidator;
+use Validator\SetValidator;
 use Validator\StringLengthValidator;
 use Validator\ValidationResult;
 use Validator\ValidatorsCollection;
@@ -63,10 +65,14 @@ class CreateProjectEndpoint extends AbstractEndpoint
 				new IsNotNullValidator(),
 				new IsIntegerValidator(),
 			]),
-//			'userIds' => new ValidatorsCollection([
-//				new IsNotNullValidator(),
-//				//  todo: check if all user ID are strings with 10 characters
-//			])
+			'userIds' => new ValidatorsCollection([
+				new IsNotNullValidator(),
+				new IsSetValidator(),
+				new SetValidator([
+					new IsStringValidator(),
+					new StringLengthValidator(10, 10),
+				])
+			])
 		];
 		$arrayValidator = new ArrayValidator();
 		return $arrayValidator->validateArray($validators, $data, false);

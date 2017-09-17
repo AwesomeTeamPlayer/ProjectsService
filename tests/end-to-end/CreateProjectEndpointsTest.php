@@ -60,24 +60,30 @@ class CreateProjectEndpointsTest extends AbstractEndToEndTest
 				[],
 				[
 					'name' => 'This value does not exist.',
-					'type' => 'This value does not exist.'
-				],
-			],
-			[
-				[
-					'name' => ''
-				],
-				[
-					'name' => [
-						'StringLengthValidator' => 'Given string has to have length in given inclusive range <1, 200>.'
-					],
-					'type' => 'This value does not exist.'
+					'type' => 'This value does not exist.',
+					'userIds' => 'This value does not exist.',
 				],
 			],
 			[
 				[
 					'name' => '',
-					'type' => 'aaa'
+					'userIds' => ''
+				],
+				[
+					'name' => [
+						'StringLengthValidator' => 'Given string has to have length in given inclusive range <1, 200>.'
+					],
+					'type' => 'This value does not exist.',
+					'userIds' => [
+						'IsSetValidator' => 'Given value is not a set.'
+					]
+				],
+			],
+			[
+				[
+					'name' => '',
+					'type' => 'aaa',
+					'userIds' => []
 				],
 				[
 					'name' => [
@@ -114,7 +120,7 @@ class CreateProjectEndpointsTest extends AbstractEndToEndTest
 		$projectId = $this->createProjectEndpoint->execute([
 			'name' => 'Project Name',
 			'type' => 123,
-			'userIds' => ['user_1', 'user_2']
+			'userIds' => ['user_____1', 'user_____2']
 		]);
 
 		$project = $this->mysqlProjectsRepository->getProject($projectId);
@@ -124,17 +130,17 @@ class CreateProjectEndpointsTest extends AbstractEndToEndTest
 		$this->assertEquals(123, $project->getType());
 
 		$userIds = $this->mysqlProjectsUsersRepository->getOrderedUsersByProjectId($projectId);
-		$this->assertEquals(['user_1', 'user_2'], $userIds);
+		$this->assertEquals(['user_____1', 'user_____2'], $userIds);
 
 		$message = $this->getMessage();
 		$this->checkMessage($message, 'project.created', ['projectId']);
 
 		$message = $this->getMessage();
 		$this->checkMessage($message, 'project.user.added', ['projectId', 'userId']);
-		$this->assertEquals('user_1', json_decode($message->getBody(), true)['userId']);
+		$this->assertEquals('user_____1', json_decode($message->getBody(), true)['userId']);
 
 		$message = $this->getMessage();
 		$this->checkMessage($message, 'project.user.added', ['projectId', 'userId']);
-		$this->assertEquals('user_2', json_decode($message->getBody(), true)['userId']);
+		$this->assertEquals('user_____2', json_decode($message->getBody(), true)['userId']);
 	}
 }
